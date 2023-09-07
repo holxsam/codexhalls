@@ -1,6 +1,4 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
-
-## Getting Started
+## Development
 
 First, run the development server:
 
@@ -16,19 +14,47 @@ Open [http://localhost:3000](http://localhost:3000) with your browser to see the
 
 You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+## Internalization (i18n)
 
-## Learn More
+### i18n in Client Components
 
-To learn more about Next.js, take a look at the following resources:
+Use the `useTranslation()` hook from `DictionaryProvider`.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+```typescript
+"use client";
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
+import { useTranslation } from "@/components/DictionaryProvider/DictionaryProvider";
 
-## Deploy on Vercel
+export const ClientComponent = () => {
+  const t = useTranslation();
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+  return <p>{t["title"]}</p>;
+};
+```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+### i18n in Server Components
+
+#### Method 1: Prop Drilling
+
+Since we cannot use react context in server components there is no way to pass down the dictionary translation data from the root layout without prop drilling. This will change once Next.js implements createServerContext and we'll update according but for now you have to just prop drill. The earliest you can start prop drilling is in the RootLayout (app/layout.tsx) but it won't always be possible so see method 2.
+
+#### Method 2: getDictionary()
+
+If you do not want to prop drill or it is not possible, then you just have to request the translation data again:
+
+```typescript
+import { getDictionary } from "@/utils/get-dictionary";
+
+export default async function ServerComponent({ params }: { params: LParam }) {
+  const t = await getDictionary(params.lang);
+  return (
+    <div>
+      <h1>{t["title"]}</h1>
+      {// try to prop drill if you need to pass it down again versus calling getDictionary() again in AnotherServerComponent}
+      <AnotherServerComponent dictionary={t}></AnotherServerComponent>
+    </div>
+  );
+}
+```
+
+Generally you want to avoid requesting this data again and again so try your best to prop drill until we get Server Context.
