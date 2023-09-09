@@ -1,31 +1,6 @@
-import {
-  IconBrandInstagram,
-  IconBrandFacebook,
-  IconPhoneOutgoing,
-  IconMail,
-  IconMap,
-  IconMapPinFilled,
-} from "@tabler/icons-react";
 import { ReactNode } from "react";
-import { Logo } from "../Logo/Logo";
-import { getDictionary } from "../../utils/get-dictionary";
+import { LogoWithText } from "../Logo/Logo";
 import Link, { LinkProps } from "next/link";
-
-type SocialsInfo = {
-  name: string;
-  link: string;
-  icon: any;
-};
-
-const SOCIALS: SocialsInfo[] = [
-  {
-    name: "instagram",
-    link: "https://www.instagram.com/karate_mari/?igshid=YmMyMTA2M2Y%3D",
-    icon: (
-      <IconBrandInstagram className="hover:text-fuchsia-600"></IconBrandInstagram>
-    ),
-  },
-];
 
 const H = ({ children }: { children: ReactNode }) => {
   return <h4 className="font-medium">{children}</h4>;
@@ -49,14 +24,17 @@ const L = ({
 
 export const Footer = () => {
   return (
-    <div
-      id="footer"
-      className="w-full bg-black/50 scroll-mt-24 min-h-[20rem] py-[4rem]"
-    >
-      <section className="pack-content w-full gap-16 flex flex-col sm:flex-row">
-        <Logo />
-        <nav className=" flex gap-16 flex-wrap">
-          <section className="flex flex-col gap-4">
+    <div id="footer" className="w-full bg-black/50 scroll-mt-24 py-[5rem]">
+      <section className="pack-content w-full gap-16 sm:gap-28 flex flex-col sm:flex-row">
+        <section className="flex flex-col gap-1">
+          <LogoWithText />
+          <span className="flex items-center gap-1 text-zinc-500">
+            <span className="text-lg">{"(c)"}</span>
+            <span className="text-sm">2023</span>
+          </span>
+        </section>
+        <nav className="flex gap-[inherit] flex-wrap text-sm">
+          <section className="flex flex-col gap-4 w-full sm:w-auto">
             <H>Overview</H>
             <ul className="flex flex-col gap-2">
               <L linkProps={{ href: "#" }}>About Us</L>
@@ -64,7 +42,7 @@ export const Footer = () => {
               <L linkProps={{ href: "#" }}>Changelog</L>
             </ul>
           </section>
-          <section className="flex flex-col gap-4">
+          <section className="flex flex-col gap-4 w-full sm:w-auto">
             <H>Community</H>
             <ul className="flex flex-col gap-2">
               <L linkProps={{ href: "#" }}>Our Discord</L>
@@ -73,14 +51,14 @@ export const Footer = () => {
               <L linkProps={{ href: "#" }}>Wayfinder Discord</L>
             </ul>
           </section>
-          <section className="flex flex-col gap-4">
+          <section className="flex flex-col gap-4 w-full sm:w-auto">
             <H>Contact</H>
             <ul className="flex flex-col gap-2">
               <L linkProps={{ href: "#" }}>Email</L>
               <L linkProps={{ href: "#" }}>Discord</L>
             </ul>
           </section>
-          <section className="flex flex-col gap-4">
+          <section className="flex flex-col gap-4 w-full sm:w-auto">
             <H>Legal</H>
             <ul className="flex flex-col gap-2">
               <L linkProps={{ href: "#" }}>Privacy Policy</L>

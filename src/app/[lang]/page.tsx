@@ -1,26 +1,13 @@
-export default function Home() {
+import Graph from "@/components/Graph/Graph";
+import { HeroSection } from "@/components/HeroSection/HeroSection";
+import { getDictionary } from "@/utils/get-dictionary";
+import { LParam } from "./layout";
+
+export default async function Home({ params }: { params: LParam }) {
+  const t = await getDictionary(params.lang);
   return (
-    <main className="pack-content flex flex-col gap-8">
-      <h2>test test test</h2>
-      <h2 id="link1">test test test</h2>
-      <h2>test test test</h2>
-      <h2>test test test</h2>
-      <h2>test test test</h2>
-      <h2>test test test</h2>
-      <h2>test test test</h2>
-      <h2>test test test</h2>
-      <h2>test test test</h2>
-      <h2>test test test</h2>
-      <h2 id="link2">test test test</h2>
-      <h2>test test test</h2>
-      <h2>test test test</h2>
-      <h2>test test test</h2>
-      <h2>test test test</h2>
-      <h2>test test test</h2>
-      <h2 id="link3">test test test</h2>
-      <h2>test test test</h2>
-      <h2>test test test</h2>
-      <h2>test test test</h2>
-    </main>
+    <div className="isolate flex flex-col gap-28 pb-32">
+      <HeroSection dictionary={t} />
+    </div>
   );
 }

@@ -1,8 +1,7 @@
 "use client";
 
-import { Popover } from "@headlessui/react";
-
 import Link from "next/link";
+import { Popover } from "@headlessui/react";
 import { Fragment } from "react";
 import { NavMenuButton } from "./NavMenuButton";
 import { cn } from "@/utils/utils";
@@ -49,16 +48,15 @@ export const NavMenu = ({ links }: { links: NavItem[] }) => {
                     // mobile/desktop:
                     "relative flex items-center capitalize text-sm outline-none appearance-none whitespace-nowrap",
                     // mobile:
-                    "pl-4 pr-8 h-12 justify-end font-semibold",
+                    "pl-4 pr-8 h-12 justify-end font-medium",
                     // desktop:
                     "sm:pl-0 sm:pr-0 sm:h-10 sm:justify-normal sm:font-medium",
                     // mobile colors:
-                    "text-zinc-400 hover:text-zinc-50 focus-visible:text-zinc-50 bg-transparent hover:bg-zinc-800/80 focus-visible:bg-zinc-800/80 hover:shadow-none focus-visible:shadow-none",
+                    "text-zinc-400 hover:text-white focus-visible:text-white bg-transparent hover:bg-zinc-800/80 focus-visible:bg-zinc-800/80 hover:shadow-none focus-visible:shadow-none",
                     // desktop colors:
-                    "sm:text-zinc-100 sm:hover:text-zinc-100 sm:focus-visible:text-zinc-100 sm:bg-transparent sm:hover:bg-transparent sm:focus-visible:bg-transparent sm:hover:[box-shadow:inset_0_-2px_0_0_white] sm:focus-visible:[box-shadow:inset_0_-2px_0_0_white]",
-
+                    "sm:text-zinc-500 sm:hover:text-white sm:focus-visible:text-white sm:bg-transparent sm:hover:bg-transparent sm:focus-visible:bg-transparent sm:hover:[box-shadow:inset_0_-2px_0_0_white] sm:focus-visible:[box-shadow:inset_0_-2px_0_0_white]",
                     link.href === pathname &&
-                      "sm:[box-shadow:inset_0_-2px_0_0_white]"
+                      "sm:[box-shadow:inset_0_-2px_0_0_white] sm:text-white"
                   )}
                 >
                   {link.name}

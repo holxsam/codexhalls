@@ -6,9 +6,10 @@ import { NavBar } from "@/components/NavBar/NavBar";
 import { Footer } from "@/components/Footer/Footer";
 
 // internationalization:
-import { Locale, i18n } from "../../../i18n-config";
+import { Locale, i18n } from "../../../i18n.config";
 import { getDictionary } from "@/utils/get-dictionary";
-import DictionaryProvider from "@/components/DictionaryProvider/DictionaryProvider";
+import DictionaryProvider from "@/components/Providers/DictionaryProvider";
+import ReactQueryProvider from "@/components/Providers/ReactQueryProvider";
 
 export const metadata: Metadata = {
   title: "Codex Halls",
@@ -57,15 +58,17 @@ export default async function RootLayout({
           "text-white bg-zinc-900 selection:bg-white selection:text-black"
         )}
       >
-        <DictionaryProvider value={dictionary}>
-          <header className="sticky top-0 flex flex-col w-full">
-            <NavBar />
-          </header>
-          <main className="-z-10 isolate min-h-screen">{children}</main>
-          <footer className="-z-20 isolate">
-            <Footer />
-          </footer>
-        </DictionaryProvider>
+        <ReactQueryProvider>
+          <DictionaryProvider value={dictionary}>
+            <header className="sticky top-0 flex flex-col w-full">
+              <NavBar />
+            </header>
+            <main className="-z-10 isolate min-h-screen">{children}</main>
+            <footer className="-z-20 isolate">
+              <Footer />
+            </footer>
+          </DictionaryProvider>
+        </ReactQueryProvider>
       </body>
     </html>
   );

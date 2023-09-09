@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { NavItem, NavMenu } from "./NavMenu";
-import { Logo } from "../Logo/Logo";
+import { LogoWithText } from "../Logo/Logo";
 import { cn } from "@/utils/utils";
 import { useEffect, useState } from "react";
 import { useLocalelessPathname } from "@/hooks/useLocalelessPathname";
@@ -76,7 +76,7 @@ export const NavBar = () => {
 
       <div className="flex justify-between items-center pack-content h-full">
         <Link href="/" className="relative z-10">
-          <Logo />
+          <LogoWithText />
         </Link>
 
         <nav className="flex gap-0 sm:gap-4">
