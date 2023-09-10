@@ -3,7 +3,6 @@
 import * as THREE from "three";
 import { useMemo, useRef, useState, useEffect } from "react";
 import { OrthographicCamera } from "three";
-import { genRandomTree } from "@/utils/utils";
 import { Canvas, useThree } from "@react-three/fiber";
 import {
   GizmoHelper,
@@ -12,9 +11,9 @@ import {
   Stats,
 } from "@react-three/drei";
 import { DragControls } from "three/addons/controls/DragControls.js";
-import { useGraphStore } from "@/store/GraphStore";
-import { GraphNodeObject } from "./GraphNodeObject";
-import { GraphEdgeObject } from "./GraphEdgeObject";
+import { GraphData, useGraphStore } from "@/store/GraphStore";
+import { GraphNode } from "./GraphNode";
+import { GraphEdge } from "./GraphEdge";
 
 const cameraProps = {
   left: -1000,
@@ -25,13 +24,13 @@ const cameraProps = {
   far: 1000,
 };
 
-export default function Graph() {
+export default function Graph({ data }: { data: GraphData }) {
   const { left, right, top, bottom, near, far } = cameraProps;
   const initGraph = useGraphStore((state) => state.initGraph);
 
   useEffect(() => {
-    initGraph(genRandomTree(1000, 300));
-  }, []);
+    initGraph(data);
+  }, [data, initGraph]);
 
   return (
     <div className="w-full h-[80vh]">
@@ -52,26 +51,13 @@ export default function Graph() {
         <Light />
         <Scene />
         <Controls />
-        {/* <mesh position={[0, 0, 0]}>
-          <boxGeometry args={[5, 5, 5]} />
-          <meshLambertMaterial opacity={1} color="#ff0000" />
-        </mesh> */}
+
         <GizmoHelper alignment="bottom-right" margin={[60, 60]}>
           <GizmoViewport labelColor="white" axisHeadScale={1} />
         </GizmoHelper>
         <Stats />
       </Canvas>
     </div>
-  );
-}
-
-function CameraHelper() {
-  const { left, right, top, bottom, near, far } = cameraProps;
-  const camera = new OrthographicCamera(left, right, top, bottom, near, far);
-  return (
-    <group position={[0, 0, 0]}>
-      <cameraHelper args={[camera]} />
-    </group>
   );
 }
 
@@ -89,13 +75,7 @@ function Light() {
 
   return (
     <>
-      <hemisphereLight
-        ref={pointLightRef}
-        // position={[x, y, z]}
-        args={["#ffffff", "#000000", 2]}
-        // intensity={intensity}
-        // color="#ff0000"
-      />
+      <hemisphereLight ref={pointLightRef} args={["#ffffff", "#000000", 2]} />
       <ambientLight intensity={0.5} />
     </>
   );
@@ -143,7 +123,7 @@ function useDragControls() {
       dragControls.deactivate(); // removes listeners
       dragControls.dispose(); // clean up
     };
-  }, [dragControls, nodes]);
+  }, [dragControls, nodes, setDrag]);
 }
 
 function Controls() {
@@ -194,14 +174,15 @@ function GraphEdges() {
         );
 
         return (
-          <GraphEdgeObject
+          <GraphEdge
             key={edge.id}
             id={edge.id}
-            edgeAnimation={connectedToHoveredNode}
+            edgeAnimation={connectedToHoveredNode || connectedToDraggedNode}
             isDragging={connectedToDraggedNode}
             isHovering={connectedToHoveredNode}
             startRef={edge.sourceRef}
             endRef={edge.targetRef}
+            curvation={8}
           />
         );
       })}
@@ -217,11 +198,13 @@ function GraphNodes() {
     <>
       {nodes.map((node) => {
         return (
-          <GraphNodeObject
+          <GraphNode
             key={node.id}
             id={node.id}
             ref={node.ref}
-            position={node.position}
+            x={node.x}
+            y={node.y}
+            z={node.z}
             color={node.color}
             radius={node.val}
             isHover={hoverId === node.id}
@@ -238,5 +221,15 @@ function Scene() {
       <GraphNodes />
       <GraphEdges />
     </>
+  );
+}
+
+function CameraHelper() {
+  const { left, right, top, bottom, near, far } = cameraProps;
+  const camera = new OrthographicCamera(left, right, top, bottom, near, far);
+  return (
+    <group position={[0, 0, 0]}>
+      <cameraHelper args={[camera]} />
+    </group>
   );
 }

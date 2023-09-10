@@ -14,16 +14,16 @@ export const cn = (...inputs: ClassValue[]) => twMerge(clsx(inputs));
 
 export const genRandomTree = (n = 300, range = 50): GraphData => {
   const r = getRandomIntInclusive;
-  const R = range;
-  const L = 1;
 
   return {
     nodes: [...Array(n).keys()].map((i) => ({
       id: `${i}`,
-      val: r(5, 10) / L,
+      val: r(5, 10),
       color: getRandomColor(),
       selected: false,
-      position: [r(-R, R) / L, r(-R, R) / L, r(-R, R) / L],
+      x: 0,
+      y: 0,
+      z: 0,
     })),
     edges: [...Array(n).keys()]
       .filter((i) => i)

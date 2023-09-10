@@ -1,16 +1,17 @@
 import { RefObject, createRef } from "react";
 import { create } from "zustand";
-import { Vector3 } from "@react-three/fiber";
 
-export type GraphNode = {
+export type GNode = {
   id: string;
   val: number;
   color: string;
   selected: boolean;
-  position: Vector3;
+  x: number;
+  y: number;
+  z: number;
 };
 
-export type GraphEdge = {
+export type GEdge = {
   id: string;
   source: string;
   target: string;
@@ -19,16 +20,16 @@ export type GraphEdge = {
 };
 
 export type GraphData = {
-  nodes: GraphNode[];
-  edges: GraphEdge[];
+  nodes: GNode[];
+  edges: GEdge[];
 };
 
-export type GraphNodeWithRef = GraphNode & {
+export type GraphNodeWithRef = GNode & {
   ref: RefObject<THREE.Mesh>;
   connections: string[];
 };
 
-export type GraphEdgeWithRef = GraphEdge & {
+export type GraphEdgeWithRef = GEdge & {
   sourceRef: RefObject<THREE.Mesh> | null;
   targetRef: RefObject<THREE.Mesh> | null;
 };
