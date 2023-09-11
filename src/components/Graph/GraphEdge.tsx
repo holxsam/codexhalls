@@ -1,6 +1,7 @@
 "use client";
 
 import { useHasMounted } from "@/hooks/useHasMounted";
+import { Vector3Array } from "@/utils/types";
 import { getMidpointOffset, getRandomIntInclusive } from "@/utils/utils";
 import { Line2Props, QuadraticBezierLine } from "@react-three/drei";
 import { useFrame } from "@react-three/fiber";
@@ -18,6 +19,9 @@ export type GraphEdgeProps = {
   curvation?: number;
   edgeAnimation?: boolean;
   forceUpdatePosition?: boolean;
+
+  start: Vector3Array;
+  end: Vector3Array;
 };
 
 function arePropsEqual(
@@ -32,7 +36,9 @@ function arePropsEqual(
     prev.isHovering === next.isHovering &&
     prev.curvation === next.curvation &&
     prev.edgeAnimation === next.edgeAnimation &&
-    prev.forceUpdatePosition === next.forceUpdatePosition
+    prev.forceUpdatePosition === next.forceUpdatePosition &&
+    prev.start === next.start &&
+    prev.end === next.end
   );
 }
 
@@ -44,35 +50,46 @@ export const GraphEdge = memo(function GraphEdge({
   curvation = 40,
   edgeAnimation = false,
   forceUpdatePosition,
+  start,
+  end,
 }: GraphEdgeProps) {
   useHasMounted(); // if you don't call this hook then the links wont render on the first render
   const animateLineRef = useRef<Line2Props>(null!);
   const staticLineRef = useRef<Line2Props>(null!);
   const randomOffset = useMemo(() => getRandomIntInclusive(0, 1000), []);
 
-  const getPoints = () => {
-    const start = startRef?.current?.position || zeroPoint;
-    const end = endRef?.current?.position || zeroPoint;
-    const midpoint = getMidpointOffset(start, end, curvation);
+  const midpoint: Vector3Array = useMemo(
+    () => [
+      (start[0] + end[0]) / 2 + curvation,
+      (start[1] + end[1]) / 2 + curvation,
+      (start[2] + end[2]) / 2 + curvation,
+    ],
+    [start, end]
+  );
 
-    return { start, end, midpoint };
-  };
+  // const getPoints = () => {
+  //   const start = startRef?.current?.position || zeroPoint;
+  //   const end = endRef?.current?.position || zeroPoint;
+  //   const midpoint = getMidpointOffset(start, end, curvation);
 
-  const updatePoints = () => {
-    const { start, end, midpoint } = getPoints();
+  //   return { start, end, midpoint };
+  // };
 
-    animateLineRef.current?.setPoints(start, end, midpoint);
-    staticLineRef.current?.setPoints(start, end, midpoint);
-  };
+  // const updatePoints = () => {
+  //   const { start, end, midpoint } = getPoints();
 
-  const { start, end, midpoint } = getPoints();
+  //   animateLineRef.current?.setPoints(start, end, midpoint);
+  //   staticLineRef.current?.setPoints(start, end, midpoint);
+  // };
+
+  // const { start, end, midpoint } = getPoints();
 
   useFrame((_, delta) => {
     if (animateLineRef.current && animateLineRef.current.material) {
       animateLineRef.current.material.uniforms.dashOffset.value += delta * 1000;
     }
 
-    if (isDragging || forceUpdatePosition) updatePoints();
+    // if (isDragging || forceUpdatePosition) updatePoints();
   });
 
   return (

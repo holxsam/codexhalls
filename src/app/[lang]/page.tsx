@@ -19,22 +19,22 @@ const physicsSettings = {
 
 const fetchGraphDataWithSimulation = async (): Promise<GraphData> => {
   // large data to test for performance:
-  // const graphData: GraphData = {
-  //   nodes: largeGraphData.nodes.map((node) => ({
-  //     ...node,
-  //     val: 1,
-  //     color: "#ffffff",
-  //     position: [0, 0, 0],
-  //   })),
-  //   edges: largeGraphData.links.map((edge, i) => ({
-  //     ...edge,
-  //     id: `${i}`,
-  //     color: "#ffffff",
-  //   })),
-  // };
+  const graphData: GraphData = {
+    nodes: largeGraphData.nodes.map((node) => ({
+      ...node,
+      val: 1,
+      color: "#ffffff",
+      position: [0, 0, 0],
+    })),
+    edges: largeGraphData.links.map((edge, i) => ({
+      ...edge,
+      id: `${i}`,
+      color: "#ffffff",
+    })),
+  };
 
   // random data to test the force layout:
-  const graphData = genRandomTree(100, 1);
+  // const graphData = genRandomTree(100, 1);
 
   // create a graph and populate it with data:
   const g = createGraph<GNode, GEdge>();
