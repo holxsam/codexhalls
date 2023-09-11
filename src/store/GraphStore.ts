@@ -1,3 +1,4 @@
+import { Vector3Array } from "@/utils/types";
 import { RefObject, createRef } from "react";
 import { create } from "zustand";
 
@@ -5,10 +6,7 @@ export type GNode = {
   id: string;
   val: number;
   color: string;
-  selected: boolean;
-  x: number;
-  y: number;
-  z: number;
+  position: Vector3Array;
 };
 
 export type GEdge = {
@@ -16,7 +14,6 @@ export type GEdge = {
   source: string;
   target: string;
   color: string;
-  selected: boolean;
 };
 
 export type GraphData = {
@@ -40,6 +37,7 @@ export type GraphState = {
   nodeHoverId: string;
   nodeDragId: string;
   cameraChanging: boolean;
+  nodesSpringAnimation: boolean;
 };
 
 export type GraphAction = {
@@ -47,14 +45,19 @@ export type GraphAction = {
   setNodeHoverId: (id: string) => void;
   setNodeDragId: (id: string) => void;
   setCameraChanging: (value: boolean) => void;
+  setNodesSpringAnimation: (value: boolean) => void;
 };
 
 export const useGraphStore = create<GraphState & GraphAction>()((set) => ({
-  nodes: [],
-  edges: [],
+  // state:
+  nodes: [] as GraphNodeWithRef[],
+  edges: [] as GraphEdgeWithRef[],
   nodeHoverId: "",
   nodeDragId: "",
   cameraChanging: false,
+  nodesSpringAnimation: true,
+
+  // actions:
   initGraph: (data) => {
     const nodes: GraphNodeWithRef[] = data.nodes.map((node) => ({
       ...node,
@@ -82,4 +85,6 @@ export const useGraphStore = create<GraphState & GraphAction>()((set) => ({
   setCameraChanging: (value) => {
     set((state) => ({ cameraChanging: value }));
   },
+  setNodesSpringAnimation: (value) =>
+    set((state) => ({ nodesSpringAnimation: value })),
 }));

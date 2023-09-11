@@ -17,6 +17,7 @@ export type GraphEdgeProps = {
   isHovering: boolean;
   curvation?: number;
   edgeAnimation?: boolean;
+  forceUpdatePosition?: boolean;
 };
 
 function arePropsEqual(
@@ -30,7 +31,8 @@ function arePropsEqual(
     prev.isDragging === next.isDragging &&
     prev.isHovering === next.isHovering &&
     prev.curvation === next.curvation &&
-    prev.edgeAnimation === next.edgeAnimation
+    prev.edgeAnimation === next.edgeAnimation &&
+    prev.forceUpdatePosition === next.forceUpdatePosition
   );
 }
 
@@ -41,6 +43,7 @@ export const GraphEdge = memo(function GraphEdge({
   isHovering,
   curvation = 40,
   edgeAnimation = false,
+  forceUpdatePosition,
 }: GraphEdgeProps) {
   useHasMounted(); // if you don't call this hook then the links wont render on the first render
   const animateLineRef = useRef<Line2Props>(null!);
@@ -69,7 +72,7 @@ export const GraphEdge = memo(function GraphEdge({
       animateLineRef.current.material.uniforms.dashOffset.value += delta * 1000;
     }
 
-    if (isDragging) updatePoints();
+    if (isDragging || forceUpdatePosition) updatePoints();
   });
 
   return (

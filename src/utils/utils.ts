@@ -1,29 +1,21 @@
+import num2fraction from "num2fraction";
 import { ClassValue, clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
-import num2fraction from "num2fraction";
-import { Vector3 } from "@react-three/fiber";
 import { GraphData } from "@/store/GraphStore";
-
-export interface HasId {
-  id: string;
-}
-
-export type AtLeast<T, K extends keyof T> = Partial<T> & Pick<T, K>;
+import { Ref, RefObject } from "react";
+import { HasId } from "./types";
 
 export const cn = (...inputs: ClassValue[]) => twMerge(clsx(inputs));
 
-export const genRandomTree = (n = 300, range = 50): GraphData => {
+export const genRandomTree = (n = 300, size?: number): GraphData => {
   const r = getRandomIntInclusive;
 
   return {
     nodes: [...Array(n).keys()].map((i) => ({
       id: `${i}`,
-      val: r(5, 10),
+      val: size ?? r(5, 10),
       color: getRandomColor(),
-      selected: false,
-      x: 0,
-      y: 0,
-      z: 0,
+      position: [0, 0, 0],
     })),
     edges: [...Array(n).keys()]
       .filter((i) => i)
@@ -32,7 +24,6 @@ export const genRandomTree = (n = 300, range = 50): GraphData => {
         source: `${i}`,
         target: `${Math.round(Math.random() * (i - 1))}`,
         color: "white",
-        selected: false,
       })),
   };
 };
@@ -118,4 +109,8 @@ export const getMidpointOffset = (
 ): [number, number, number] => {
   const m = calcMidpoint(a, b);
   return [m[0] + curve, m[1] + curve, m[2] + curve];
+};
+
+export const isRefObject = <T>(ref: Ref<T>): ref is RefObject<T> => {
+  return ref !== null && typeof ref !== "function";
 };
