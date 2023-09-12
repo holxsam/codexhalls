@@ -31,7 +31,6 @@ import { GraphEdge } from "./GraphEdge";
 import { useKeyboardDebug } from "@/hooks/useKeyboardDebug";
 import { a, config, useSprings } from "@react-spring/three";
 import { Vector3Array } from "@/utils/types";
-import niceColors from "nice-color-palettes";
 import { getRandomIntInclusive, isRefObject } from "@/utils/utils";
 import { clamp } from "three/src/math/MathUtils.js";
 
