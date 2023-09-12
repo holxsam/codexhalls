@@ -7,6 +7,8 @@ export type GNode = {
   val: number;
   color: string;
   position: Vector3Array;
+  scale: Vector3Array;
+  rotation: Vector3Array;
 };
 
 export type GEdge = {

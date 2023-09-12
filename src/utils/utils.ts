@@ -14,8 +14,10 @@ export const genRandomTree = (n = 300, size?: number): GraphData => {
     nodes: [...Array(n).keys()].map((i) => ({
       id: `${i}`,
       val: size ?? r(5, 10),
-      color: getRandomColor(),
+      color: getRandomColorFromSet(),
       position: [0, 0, 0],
+      scale: [2, 2, 2],
+      rotation: [0, 0, 0],
     })),
     edges: [...Array(n).keys()]
       .filter((i) => i)
@@ -37,6 +39,11 @@ export const getRandomColor = () => {
 
   return `#${color}`;
 };
+
+export const getRandomColorFromSet = (
+  colors = ["#10b981", "#0ea5e9", "#f43f5e", "#eab308", "#a855f7"]
+  // colors = ["#eab308", "#a855f7"]
+) => colors[Math.floor(Math.random() * colors.length)];
 
 export const getRandomIntInclusive = (min: number, max: number) => {
   min = Math.ceil(min);

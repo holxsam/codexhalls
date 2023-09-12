@@ -1,7 +1,7 @@
 import { HeroSection } from "@/components/HeroSection/HeroSection";
 import { getDictionary } from "@/utils/get-dictionary";
 import { LParam } from "./layout";
-import { genRandomTree } from "@/utils/utils";
+import { genRandomTree, getRandomColorFromSet } from "@/utils/utils";
 import { GEdge, GNode, GraphData } from "@/store/GraphStore";
 import forceLayout from "ngraph.forcelayout";
 import createGraph from "ngraph.graph";
@@ -19,22 +19,27 @@ const physicsSettings = {
 
 const fetchGraphDataWithSimulation = async (): Promise<GraphData> => {
   // large data to test for performance:
-  const graphData: GraphData = {
-    nodes: largeGraphData.nodes.map((node) => ({
-      ...node,
-      val: 1,
-      color: "#ffffff",
-      position: [0, 0, 0],
-    })),
-    edges: largeGraphData.links.map((edge, i) => ({
-      ...edge,
-      id: `${i}`,
-      color: "#ffffff",
-    })),
-  };
+  // const graphData: GraphData = {
+  //   nodes: largeGraphData.nodes.map((node) => ({
+  //     ...node,
+  //     val: 1,
+  //     color: getRandomColorFromSet(),
+  //     position: [0, 0, 0],
+  //     scale: [2, 2, 2],
+  //     rotation: [0, 0, 0],
+  //   })),
+  //   edges: largeGraphData.links.map((edge, i) => ({
+  //     ...edge,
+  //     id: `${i}`,
+  //     color: getRandomColorFromSet(),
+  //   })),
+  // };
 
   // random data to test the force layout:
-  // const graphData = genRandomTree(100, 1);
+  const graphData = genRandomTree(200, 1);
+
+  // random data to test the force layout:
+  // const graphData = stableData;
 
   // create a graph and populate it with data:
   const g = createGraph<GNode, GEdge>();
@@ -68,3 +73,74 @@ export default async function Home({ params }: { params: LParam }) {
     </div>
   );
 }
+
+const stableData: GraphData = {
+  nodes: [
+    {
+      id: "0",
+      val: 1,
+      color: "#f43f5e",
+      position: [0, 0, 0],
+      scale: [2, 2, 2],
+      rotation: [0, 0, 0],
+    },
+    {
+      id: "1",
+      val: 1,
+      color: "#0ea5e9",
+      position: [0, 0, 0],
+      scale: [2, 2, 2],
+      rotation: [0, 0, 0],
+    },
+    {
+      id: "2",
+      val: 1,
+      color: "#0ea5e9",
+      position: [0, 0, 0],
+      scale: [2, 2, 2],
+      rotation: [0, 0, 0],
+    },
+    {
+      id: "3",
+      val: 1,
+      color: "#10b981",
+      position: [0, 0, 0],
+      scale: [2, 2, 2],
+      rotation: [0, 0, 0],
+    },
+    {
+      id: "4",
+      val: 1,
+      color: "#0ea5e9",
+      position: [0, 0, 0],
+      scale: [2, 2, 2],
+      rotation: [0, 0, 0],
+    },
+  ],
+  edges: [
+    {
+      id: "1",
+      source: "1",
+      target: "0",
+      color: "white",
+    },
+    {
+      id: "2",
+      source: "2",
+      target: "0",
+      color: "white",
+    },
+    {
+      id: "3",
+      source: "3",
+      target: "0",
+      color: "white",
+    },
+    {
+      id: "4",
+      source: "4",
+      target: "2",
+      color: "white",
+    },
+  ],
+};

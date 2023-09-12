@@ -2,22 +2,13 @@
 
 import { useEffect } from "react";
 
-type KeyboardDebugProps = {
-  keyboardKey?: string;
-  func: () => void;
-};
-
-export const useKeyboardDebug = ({
-  keyboardKey = "d",
-  func,
-}: KeyboardDebugProps) => {
+export const useKeyboardDebug = (key: string, func: () => any) => {
   useEffect(() => {
     const debug = (e: KeyboardEvent) => {
-      if (e.key === keyboardKey) func();
+      if (e.key === key && func) func();
     };
+
     window.addEventListener("keydown", debug);
-    return () => {
-      window.removeEventListener("keydown", debug);
-    };
-  }, [keyboardKey, func]);
+    return () => window.removeEventListener("keydown", debug);
+  }, [key, func]);
 };
