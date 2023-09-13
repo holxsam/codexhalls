@@ -23,9 +23,14 @@ export type GraphData = {
   edges: GEdge[];
 };
 
+type Connection = {
+  sources: string[];
+  targets: string[];
+};
+
 export type GraphNodeWithRef = GNode & {
   ref: RefObject<THREE.Mesh>;
-  connections: string[];
+  connections: Connection;
 };
 
 export type GraphEdgeWithRef = GEdge & {
@@ -34,8 +39,8 @@ export type GraphEdgeWithRef = GEdge & {
 };
 
 export type GraphState = {
-  nodes: GraphNodeWithRef[];
-  edges: GraphEdgeWithRef[];
+  nodes: GNode[];
+  edges: GEdge[];
   nodeHoverId: string;
   nodeDragId: string;
   cameraChanging: boolean;
@@ -52,8 +57,10 @@ export type GraphAction = {
 
 export const useGraphStore = create<GraphState & GraphAction>()((set) => ({
   // state:
-  nodes: [] as GraphNodeWithRef[],
-  edges: [] as GraphEdgeWithRef[],
+  // nodes: [] as GraphNodeWithRef[],
+  // edges: [] as GraphEdgeWithRef[],
+  nodes: [] as GNode[],
+  edges: [] as GEdge[],
   nodeHoverId: "",
   nodeDragId: "",
   cameraChanging: false,
@@ -61,26 +68,34 @@ export const useGraphStore = create<GraphState & GraphAction>()((set) => ({
 
   // actions:
   initGraph: (data) => {
-    const nodes: GraphNodeWithRef[] = data.nodes.map((node) => ({
-      ...node,
-      ref: createRef<THREE.Mesh>(),
-      connections: data.edges
-        .filter((edge) => node.id === edge.source || node.id === edge.target)
-        .map((edge) => edge.id),
-    }));
+    // const nodes: GraphNodeWithRef[] = data.nodes.map((node) => ({
+    //   ...node,
+    //   ref: createRef<THREE.Mesh>(),
+    //   // connections: data.edges
+    //   //   .filter((edge) => node.id === edge.source || node.id === edge.target)
+    //   //   .map((edge) => edge.id),
+    //   connections: {
+    //     sources: data.edges
+    //       .filter((edge) => node.id === edge.source)
+    //       .map((edge) => edge.target),
+    //     targets: data.edges
+    //       .filter((edge) => node.id === edge.target)
+    //       .map((edge) => edge.source),
+    //   },
+    // }));
 
-    const edges: GraphEdgeWithRef[] = data.edges.map((edge) => {
-      const source = nodes.find((node) => node.id === edge.source);
-      const target = nodes.find((node) => node.id === edge.target);
+    // const edges: GraphEdgeWithRef[] = data.edges.map((edge) => {
+    //   const source = nodes.find((node) => node.id === edge.source);
+    //   const target = nodes.find((node) => node.id === edge.target);
 
-      return {
-        ...edge,
-        sourceRef: source ? source.ref : null,
-        targetRef: target ? target.ref : null,
-      };
-    });
+    //   return {
+    //     ...edge,
+    //     sourceRef: source ? source.ref : null,
+    //     targetRef: target ? target.ref : null,
+    //   };
+    // });
 
-    set((state) => ({ nodes, edges }));
+    set((state) => ({ nodes: data.nodes, edges: data.edges }));
   },
   setNodeHoverId: (id) => set((state) => ({ nodeHoverId: id })),
   setNodeDragId: (id) => set((state) => ({ nodeDragId: id })),
