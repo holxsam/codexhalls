@@ -3,17 +3,18 @@ import { ClassValue, clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
 import { GraphData } from "@/store/GraphStore";
 import { Ref, RefObject } from "react";
-import { HasId } from "./types";
+import { HasId, Vector3Array } from "./types";
+import { Color, Vector3 } from "three";
+import { ANGLE_INCREMENT } from "./constants";
 
 export const cn = (...inputs: ClassValue[]) => twMerge(clsx(inputs));
 
-export const genRandomTree = (n = 300, size?: number): GraphData => {
+export const genRandomTree = (n = 300): GraphData => {
   const r = getRandomIntInclusive;
 
   return {
     nodes: [...Array(n).keys()].map((i) => ({
       id: `${i}`,
-      val: size ?? r(5, 10),
       color: getRandomColorFromSet(),
       position: [0, 0, 0],
       scale: [2, 2, 2],
@@ -121,3 +122,53 @@ export const getMidpointOffset = (
 export const isRefObject = <T>(ref: Ref<T>): ref is RefObject<T> => {
   return ref !== null && typeof ref !== "function";
 };
+
+const vectorTemp = new Vector3();
+export const getFibonocciSphere = (
+  i: number,
+  numOfPoints: number,
+  radius = 1
+): Vector3Array => {
+  i = i + 1;
+  const t = i / numOfPoints;
+  const angle1 = Math.acos(1 - 2 * t);
+  const angle2 = ANGLE_INCREMENT * i;
+
+  const x = radius * Math.sin(angle1) * Math.cos(angle2);
+  const y = radius * Math.sin(angle1) * Math.sin(angle2);
+  const z = radius * Math.cos(angle1);
+
+  return [x, y, z];
+};
+
+export const getDistanceBetweenFibonocciPoints = (
+  numOfPoints: number,
+  radius: number
+) => {
+  const a = getFibonocciSphere(0, numOfPoints, radius);
+  const b = getFibonocciSphere(1, numOfPoints, radius);
+
+  const distance = vectorTemp
+    .set(a[0], a[1], a[2])
+    .distanceTo(vectorTemp.clone().set(b[0], b[1], b[2]));
+
+  return distance;
+};
+
+export const getFibonocciSphereRadiusFromDistance = (
+  numOfPoints: number,
+  distanceBetweenPoints: number
+) => {
+  let radius = 1;
+  let distance = 0;
+  while (distance < distanceBetweenPoints) {
+    distance = getDistanceBetweenFibonocciPoints(numOfPoints, radius);
+    radius++;
+  }
+
+  return radius;
+};
+
+const tempColor = new Color();
+export const hexToArray = (color: string) =>
+  tempColor.set(color).toArray() as Vector3Array;

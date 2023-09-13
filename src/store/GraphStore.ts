@@ -1,10 +1,14 @@
 import { Vector3Array } from "@/utils/types";
+import { isRefObject } from "@/utils/utils";
 import { RefObject, createRef } from "react";
+import { InstancedMesh, LineSegments, Matrix4, Object3D } from "three";
 import { create } from "zustand";
+
+const o = new Object3D(); // reusable object3D
+const m = new Matrix4(); // reusable matrix
 
 export type GNode = {
   id: string;
-  val: number;
   color: string;
   position: Vector3Array;
   scale: Vector3Array;
@@ -41,10 +45,15 @@ export type GraphEdgeWithRef = GEdge & {
 export type GraphState = {
   nodes: GNode[];
   edges: GEdge[];
+
+  nodesRef: RefObject<InstancedMesh>;
+  edgesRef: RefObject<LineSegments>;
+
   nodeHoverId: string;
   nodeDragId: string;
   cameraChanging: boolean;
   nodesSpringAnimation: boolean;
+  mode: "sphere" | "tree";
 };
 
 export type GraphAction = {
@@ -53,18 +62,23 @@ export type GraphAction = {
   setNodeDragId: (id: string) => void;
   setCameraChanging: (value: boolean) => void;
   setNodesSpringAnimation: (value: boolean) => void;
+  setMode: (value: GraphState["mode"]) => void;
+  toggleMode: () => void;
 };
 
 export const useGraphStore = create<GraphState & GraphAction>()((set) => ({
   // state:
-  // nodes: [] as GraphNodeWithRef[],
-  // edges: [] as GraphEdgeWithRef[],
   nodes: [] as GNode[],
   edges: [] as GEdge[],
+
+  nodesRef: createRef<InstancedMesh>(),
+  edgesRef: createRef<LineSegments>(),
+
   nodeHoverId: "",
   nodeDragId: "",
   cameraChanging: false,
   nodesSpringAnimation: true,
+  mode: "sphere",
 
   // actions:
   initGraph: (data) => {
@@ -104,4 +118,8 @@ export const useGraphStore = create<GraphState & GraphAction>()((set) => ({
   },
   setNodesSpringAnimation: (value) =>
     set((state) => ({ nodesSpringAnimation: value })),
+
+  setMode: (mode) => set((state) => ({ mode })),
+  toggleMode: () =>
+    set(({ mode }) => ({ mode: mode === "sphere" ? "tree" : "sphere" })),
 }));

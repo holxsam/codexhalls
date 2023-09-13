@@ -22,7 +22,6 @@ const fetchGraphDataWithSimulation = async (): Promise<GraphData> => {
   // const graphData: GraphData = {
   //   nodes: largeGraphData.nodes.map((node) => ({
   //     ...node,
-  //     val: 1,
   //     color: getRandomColorFromSet(),
   //     position: [0, 0, 0],
   //     scale: [2, 2, 2],
@@ -36,7 +35,7 @@ const fetchGraphDataWithSimulation = async (): Promise<GraphData> => {
   // };
 
   // random data to test the force layout:
-  const graphData = genRandomTree(200, 1);
+  const graphData = genRandomTree(300);
 
   // random data to test the force layout:
   // const graphData = stableData;
@@ -78,7 +77,6 @@ const stableData: GraphData = {
   nodes: [
     {
       id: "0",
-      val: 1,
       color: "#f43f5e",
       position: [0, 0, 0],
       scale: [2, 2, 2],
@@ -86,7 +84,6 @@ const stableData: GraphData = {
     },
     {
       id: "1",
-      val: 1,
       color: "#0ea5e9",
       position: [0, 0, 0],
       scale: [2, 2, 2],
@@ -94,7 +91,6 @@ const stableData: GraphData = {
     },
     {
       id: "2",
-      val: 1,
       color: "#0ea5e9",
       position: [0, 0, 0],
       scale: [2, 2, 2],
@@ -102,7 +98,6 @@ const stableData: GraphData = {
     },
     {
       id: "3",
-      val: 1,
       color: "#10b981",
       position: [0, 0, 0],
       scale: [2, 2, 2],
@@ -110,7 +105,6 @@ const stableData: GraphData = {
     },
     {
       id: "4",
-      val: 1,
       color: "#0ea5e9",
       position: [0, 0, 0],
       scale: [2, 2, 2],
