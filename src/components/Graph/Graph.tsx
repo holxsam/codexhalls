@@ -9,7 +9,6 @@ import {
   useLayoutEffect,
   useCallback,
 } from "react";
-
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { GraphData, useGraphStore } from "@/store/GraphStore";
 import { useKeyboardDebug } from "@/hooks/useKeyboardDebug";
@@ -25,13 +24,14 @@ import {
   getFibonocciSphere,
   getFibonocciSphereRadiusFromDistance,
   hexToArray,
+  isRefObject,
 } from "@/utils/utils";
 
 THREE.ColorManagement.enabled = true;
 
 const cameraPosition = new THREE.Vector3().setFromSphericalCoords(
   DISTANCE_FROM_ORIGIN / 4,
-  0,
+  Math.PI / 3,
   0
 );
 
@@ -43,7 +43,7 @@ export default function Graph({ data }: { data: GraphData }) {
   }, [data, initGraph]);
 
   return (
-    <div className="relative w-full h-screen">
+    <div className="relative w-full h-screen-dvh">
       <ModeButton />
       <Canvas camera={{ position: cameraPosition }}>
         <Lights />
@@ -70,7 +70,7 @@ const ModeButton = () => {
   );
 };
 
-const m = new THREE.Matrix4(); // reusable matrix
+const o = new THREE.Object3D(); // reusable matrix
 
 const GraphNodes = () => {
   const boxesRef = useGraphStore((state) => state.nodesRef);
@@ -82,6 +82,7 @@ const GraphNodes = () => {
 
   const mode = useGraphStore((state) => state.mode);
   const setMode = useGraphStore((state) => state.setMode);
+  const setAnimating = useGraphStore((state) => state.setAnimating);
 
   const radius = useMemo(
     () => getFibonocciSphereRadiusFromDistance(nodes.length, 15),
@@ -165,7 +166,7 @@ const GraphNodes = () => {
       to: mode === "tree" ? b : a,
       config: config.stiff,
       onStart: () => {
-        console.log("start");
+        setAnimating(true);
       },
       onChange: (result) => {
         if (!boxesRef.current || !linesRef.current) return;
@@ -181,9 +182,11 @@ const GraphNodes = () => {
           nodePositionVectorMap.current.get(id)?.set(p[0], p[1], p[2]);
 
           // updates the position matrix:
-          boxesRef.current.getMatrixAt(i, m);
-          m.setPosition(p[0], p[1], p[2]);
-          boxesRef.current.setMatrixAt(i, m);
+          boxesRef.current.getMatrixAt(i, o.matrix);
+          o.matrix.decompose(o.position, o.quaternion, o.scale);
+          o.position.set(p[0], p[1], p[2]);
+          o.updateMatrix();
+          boxesRef.current.setMatrixAt(i, o.matrix);
         }
 
         // tells three.js it needs to update its render
@@ -191,7 +194,7 @@ const GraphNodes = () => {
         linesRef.current.geometry.setFromPoints(points.current);
       },
       onRest: () => {
-        console.log("onRest");
+        setAnimating(false);
       },
     },
     [mode]

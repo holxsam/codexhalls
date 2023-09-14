@@ -9,15 +9,13 @@ import { ANGLE_INCREMENT } from "./constants";
 
 export const cn = (...inputs: ClassValue[]) => twMerge(clsx(inputs));
 
-export const genRandomTree = (n = 300): GraphData => {
-  const r = getRandomIntInclusive;
-
+export const generateRandomGraph = (n = 300, scale = 2): GraphData => {
   return {
     nodes: [...Array(n).keys()].map((i) => ({
       id: `${i}`,
       color: getRandomColorFromSet(),
       position: [0, 0, 0],
-      scale: [2, 2, 2],
+      scale: [scale, scale, scale],
       rotation: [0, 0, 0],
     })),
     edges: [...Array(n).keys()]

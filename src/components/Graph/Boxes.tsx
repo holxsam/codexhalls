@@ -1,12 +1,11 @@
-import { Object3D, Color, Matrix4 } from "three";
-
+import { Object3D, Color } from "three";
 import { Vector3Array } from "@/utils/types";
 import { isRefObject } from "@/utils/utils";
-import { forwardRef, useMemo, useRef, useLayoutEffect } from "react";
+import { forwardRef, useMemo, useLayoutEffect } from "react";
+import { InstancedMeshProps, useFrame } from "@react-three/fiber";
 
 const o = new Object3D(); // reusable object3D
-const m = new Matrix4(); // reusable matrix
-const c = new Color(); // reusable color
+const tempColor = new Color(); // reusable color
 const prevC = new Color(); // reusable color for previous color only
 
 type BoxesProps = {
@@ -18,103 +17,91 @@ type BoxesProps = {
 };
 
 export const Boxes = forwardRef<THREE.InstancedMesh, BoxesProps>(function Boxes(
-  { maxLength = 5000, positions, scales, rotations, colors },
+  { maxLength = 10000, positions, scales, rotations, colors },
   ref
 ) {
-  // const nodes = useGraphStore((state) => state.nodes);
-  // const ref = useRef<THREE.InstancedMesh>(null!);
-  const size: Vector3Array = useMemo(() => [1, 1, 1], []);
   const COLORS = useMemo(() => new Float32Array(colors.flat()), [colors]);
   const length = positions.length;
-  const spreadAnimationDone = useRef(false);
+
+  const onPointerOver: InstancedMeshProps["onPointerOver"] = (e) => {
+    e.stopPropagation(); // stops the raycasting from picking objects behind
+    const id = e.instanceId;
+
+    // prettier-ignore
+    if (!isRefObject(ref) || !ref.current || ref.current.instanceColor === null || id === undefined) return;
+
+    ref.current.getColorAt(id, prevC);
+    ref.current.setColorAt(id, prevC.clone().addScalar(0.3));
+    ref.current.instanceColor.needsUpdate = true;
+  };
+
+  const onPointerOut: InstancedMeshProps["onPointerOut"] = (e) => {
+    const id = e.instanceId;
+
+    // prettier-ignore
+    if (!isRefObject(ref) || !ref.current || ref.current.instanceColor === null || id === undefined) return;
+
+    ref.current.setColorAt(id, prevC);
+    ref.current.instanceColor.needsUpdate = true;
+  };
+
+  const onClick: InstancedMeshProps["onClick"] = (e) => {
+    e.stopPropagation();
+    console.log(e.instanceId);
+  };
 
   useLayoutEffect(() => {
-    // set initial positions, scales, and rotations:
-
     if (!isRefObject(ref) || !ref.current) return;
+    ref.current.setColorAt(0, tempColor); // needs to be called at least once before render
+    if (ref.current.instanceColor === null) return; // once setColor is called once instanceColor should no longer be null
 
-    const length = positions.length;
+    // set initial positions, scales, rotations, and colors:
     for (let i = 0; i < length; i++) {
-      const p = positions[i];
-      const s = scales[i];
-      const r = rotations[i];
-
-      o.position.set(p[0], p[1], p[2]);
-      o.scale.set(s[0], s[1], s[2]);
-      o.rotation.set(r[0], r[1], r[2]);
+      // GEOMETRIES:
+      o.position.set(...positions[i]);
+      o.scale.set(...scales[i]);
+      o.rotation.set(...rotations[i]);
       o.updateMatrix();
-
-      //  ref.current.getMatrixAt(i, m);
-      // m.setPosition(p[0], p[1], p[2]);
-      // // m.
-      //  ref.current.setMatrixAt(i, m);
-
       ref.current.setMatrixAt(i, o.matrix);
+
+      // COLOR:
+      ref.current.setColorAt(i, tempColor.setRGB(...colors[i]));
     }
+
+    // commit the updates:
     ref.current.instanceMatrix.needsUpdate = true;
-
-    // set initial colors:
-    colors.forEach((color, i) => {
-      if (!isRefObject(ref) || !ref.current) return;
-
-      // must call setColorAt before first render
-      ref.current.setColorAt(i, c.setRGB(color[0], color[1], color[2]));
-    });
-    if (ref.current.instanceColor?.needsUpdate)
-      ref.current.instanceColor.needsUpdate = true;
+    ref.current.instanceColor.needsUpdate = true;
   }, [positions, scales, rotations, colors]);
 
   // useFrame((state, delta) => {
-  //   if (spreadAnimationDone.current) {
-  //     for (let i = 0; i < length; i++) {
-  //       const p = positions[i];
-  //       const s = scales[i];
-  //       const r = rotations[i];
+  //   if (useGraphStore.getState().animating) return; // for performance
+  //   if (!isRefObject(ref) || !ref.current) return;
 
-  //       o.position.set(p[0], p[1], p[2]);
-  //       o.scale.set(s[0], s[1], s[2]);
-  //       // o.rotation.set(r[0], r[1], r[2]);
-  //       o.rotation.set(
-  //         o.rotation.x + (delta * Math.PI) / 5 / 180,
-  //         o.rotation.y,
-  //         o.rotation.z
-  //       );
+  //   for (let i = 0; i < length; i++) {
+  //     // get current values:
+  //     ref.current.getMatrixAt(i, o.matrix);
+  //     o.matrix.decompose(o.position, o.quaternion, o.scale);
 
-  //       o.updateMatrix();
-  //       ref.current.setMatrixAt(i, o.matrix);
-  //     }
-  //     ref.current.instanceMatrix.needsUpdate = true;
+  //     // update components:
+  //     o.rotateX(delta * (1 / Math.PI));
+
+  //     // commit the updates to the object:
+  //     o.updateMatrix();
+
+  //     // commit the updates to the instance matrix
+  //     ref.current.setMatrixAt(i, o.matrix);
   //   }
+
+  //   ref.current.instanceMatrix.needsUpdate = true;
   // });
 
   return (
     <instancedMesh
       ref={ref}
       args={[undefined, undefined, positions.length]}
-      onPointerOver={(e) => {
-        e.stopPropagation(); // stops the raycasting from picking objects behind
-        const id = e.instanceId;
-
-        // prettier-ignore
-        if (!isRefObject(ref) || !ref.current || ref.current.instanceColor === null || id === undefined) return;
-
-        ref.current.getColorAt(id, prevC);
-        ref.current.setColorAt(id, prevC.clone().addScalar(0.3));
-        ref.current.instanceColor.needsUpdate = true;
-      }}
-      onPointerOut={(e) => {
-        const id = e.instanceId;
-
-        // prettier-ignore
-        if (!isRefObject(ref) || !ref.current || ref.current.instanceColor === null || id === undefined) return;
-
-        ref.current.setColorAt(id, prevC);
-        ref.current.instanceColor.needsUpdate = true;
-      }}
-      onClick={(e) => {
-        e.stopPropagation();
-        console.log(e.instanceId);
-      }}
+      onPointerOver={onPointerOver}
+      onPointerOut={onPointerOut}
+      onClick={onClick}
     >
       <boxGeometry>
         <instancedBufferAttribute

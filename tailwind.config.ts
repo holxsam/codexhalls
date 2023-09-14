@@ -112,12 +112,30 @@ const config: Config = {
     require("tailwind-scrollbar"),
     plugin(function ({ addUtilities }) {
       addUtilities({
+        ".pack-content": {
+          "@apply mx-auto max-w-5xl px-4 w-full": {},
+        },
+        ".custom-scrollbar-tiny": {
+          "@apply scrollbar-thin scrollbar-thumb-zinc-600/50 hover:scrollbar-track-zinc-800/20 hover:scrollbar-thumb-zinc-500":
+            {},
+        },
+        ".scrollbar-tiny-white": {
+          "@apply scrollbar-thin scrollbar-thumb-white/80 scrollbar-track-zinc-800/30 hover:scrollbar-thumb-white":
+            {},
+        },
         ".no-scrollbar": {
           "-ms-overflow-style": "none" /* IE and Edge */,
           "scrollbar-width": "none" /* Firefox */,
         },
         ".no-scrollbar::-webkit-scrollbar": {
           display: "none",
+        },
+        ".h-screen-dvh": {
+          // this class handles the 100vh on mobile address bar issue
+          height: [
+            "100vh", // fallback if dvh is not supported
+            "100dvh", // this solves the issue
+          ],
         },
       });
     }),

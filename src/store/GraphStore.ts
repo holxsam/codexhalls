@@ -1,6 +1,6 @@
 import { Vector3Array } from "@/utils/types";
 import { isRefObject } from "@/utils/utils";
-import { RefObject, createRef } from "react";
+import { MutableRefObject, RefObject, createRef } from "react";
 import { InstancedMesh, LineSegments, Matrix4, Object3D } from "three";
 import { create } from "zustand";
 
@@ -54,6 +54,7 @@ export type GraphState = {
   cameraChanging: boolean;
   nodesSpringAnimation: boolean;
   mode: "sphere" | "tree";
+  animating: boolean;
 };
 
 export type GraphAction = {
@@ -64,6 +65,7 @@ export type GraphAction = {
   setNodesSpringAnimation: (value: boolean) => void;
   setMode: (value: GraphState["mode"]) => void;
   toggleMode: () => void;
+  setAnimating: (value: boolean) => void;
 };
 
 export const useGraphStore = create<GraphState & GraphAction>()((set) => ({
@@ -79,6 +81,7 @@ export const useGraphStore = create<GraphState & GraphAction>()((set) => ({
   cameraChanging: false,
   nodesSpringAnimation: true,
   mode: "sphere",
+  animating: false,
 
   // actions:
   initGraph: (data) => {
@@ -122,4 +125,9 @@ export const useGraphStore = create<GraphState & GraphAction>()((set) => ({
   setMode: (mode) => set((state) => ({ mode })),
   toggleMode: () =>
     set(({ mode }) => ({ mode: mode === "sphere" ? "tree" : "sphere" })),
+  // setAnimating: (value) => set((state) => ({ animating: value })),
+  setAnimating: (value) =>
+    set((state) => {
+      return { animating: value };
+    }),
 }));
