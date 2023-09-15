@@ -22,7 +22,6 @@ export const InstancedNodes = forwardRef<THREE.InstancedMesh, BoxesProps>(
     { maxLength = 10000, positions, scales, rotations, colors },
     ref
   ) {
-    const connections = useGraphStore((state) => state.connections);
     const instanceIdToNodeId = useGraphStore(
       (state) => state.instanceIdToNodeId
     );
@@ -47,12 +46,12 @@ export const InstancedNodes = forwardRef<THREE.InstancedMesh, BoxesProps>(
     };
 
     const onPointerOut: InstancedMeshProps["onPointerOut"] = (e) => {
-      const id = e.instanceId;
+      const iId = e.instanceId;
 
       // prettier-ignore
-      if (!isRefObject(ref) || !ref.current || ref.current.instanceColor === null || id === undefined) return;
+      if (!isRefObject(ref) || !ref.current || ref.current.instanceColor === null || iId === undefined) return;
 
-      ref.current.setColorAt(id, prevC);
+      ref.current.setColorAt(iId, prevC);
       ref.current.instanceColor.needsUpdate = true;
 
       setHover("");
@@ -60,17 +59,13 @@ export const InstancedNodes = forwardRef<THREE.InstancedMesh, BoxesProps>(
 
     const onClick: InstancedMeshProps["onClick"] = (e) => {
       e.stopPropagation();
-      const id = e.instanceId;
+      const iId = e.instanceId;
 
-      if (id === undefined) return;
+      if (iId === undefined) return;
 
-      console.log("----------------");
-      console.log(
-        "main node",
-        id,
-        useGraphStore.getState().instanceIdToNodeId[id]
-      );
-      console.log("connected", connections[id]);
+      const nodeId = useGraphStore.getState().instanceIdToNodeId[iId];
+      console.log("-------------------");
+      console.log("Node", nodeId, iId);
     };
 
     useLayoutEffect(() => {
