@@ -16,7 +16,7 @@ import { config, useSpring } from "@react-spring/three";
 import { Vector3Array } from "@/utils/types";
 import { Lights } from "./Lights";
 import { Lines } from "./Lines";
-import { Boxes } from "./Boxes";
+import { InstancedNodes } from "./InstancedNodes";
 import { Controls } from "./Controls";
 import { Helpers } from "./Helpers";
 import { DISTANCE_FROM_ORIGIN } from "@/utils/constants";
@@ -63,7 +63,7 @@ const ModeButton = () => {
   return (
     <button
       type="button"
-      className="z-10 absolute bottom-0 left-0 bg-indigo-500 uppercase font-medium w-24 h-10"
+      className="z-10 absolute bottom-0 left-0 rounded-md bg-indigo-500 uppercase font-medium w-24 h-10 m-2"
       onClick={toggleMode}
     >
       {mode}
@@ -220,7 +220,7 @@ const GraphNodes = () => {
 
   return (
     <>
-      <Boxes
+      <InstancedNodes
         ref={boxesRef as Ref<THREE.InstancedMesh>}
         positions={startPositions}
         colors={colors}

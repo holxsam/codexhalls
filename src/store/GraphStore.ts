@@ -23,28 +23,13 @@ export type GraphData = {
   edges: GEdge[];
 };
 
-type Connection = {
-  sources: string[];
-  targets: string[];
-};
-
-export type GraphNodeWithRef = GNode & {
-  ref: RefObject<THREE.Mesh>;
-  connections: Connection;
-};
-
-export type GraphEdgeWithRef = GEdge & {
-  sourceRef: RefObject<THREE.Mesh> | null;
-  targetRef: RefObject<THREE.Mesh> | null;
-};
-
 export type NodeConnections = {
   sources: string[]; // string of node id's
   targets: string[]; // string of node id's
 };
 
 export type NodeConnectionsMap = {
-  [id: string]: NodeConnections;
+  [nodeId: string]: NodeConnections;
 };
 
 export type InstanceToNodeIdMap = { [instanceId: number]: string };

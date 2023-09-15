@@ -5,8 +5,34 @@ import { generateRandomGraph, getRandomColorFromSet } from "@/utils/utils";
 import { GEdge, GNode, GraphData } from "@/store/GraphStore";
 import forceLayout from "ngraph.forcelayout";
 import createGraph from "ngraph.graph";
-import largeGraphData from "@/utils/large-graph-data.json";
-import stableData from "@/utils/stable-data.json";
+import largeGraphData from "@/test-data/large-graph-data.json";
+import stableData from "@/test-data/stable-data.json";
+
+export default async function Home({ params }: { params: LParam }) {
+  const t = await getDictionary(params.lang);
+  const graphData = await fetchGraphDataWithSimulation();
+
+  return (
+    <div className="isolate flex flex-col gap-28 pb-32">
+      <HeroSection dictionary={t} graphData={graphData} />
+    </div>
+  );
+}
+
+const fetchGraphDataWithSimulation = async (): Promise<GraphData> => {
+  // large data to test for performance:
+  // const data = getLargeData();
+
+  // random data to test the force layout:
+  const data = generateRandomGraph(200, 2);
+
+  // stable data to test the force layout:
+  // const data = stableData as GraphData;
+
+  simulateForces(data);
+
+  return data;
+};
 
 const physicsSettings = {
   // timeStep: 0.5,
@@ -18,29 +44,7 @@ const physicsSettings = {
   // dragCoefficient: 0.9,
 };
 
-const fetchGraphDataWithSimulation = async (): Promise<GraphData> => {
-  // large data to test for performance:
-  // const data: GraphData = {
-  //   nodes: largeGraphData.nodes.map((node) => ({
-  //     ...node,
-  //     color: getRandomColorFromSet(),
-  //     position: [0, 0, 0],
-  //     scale: [2, 2, 2],
-  //     rotation: [0, 0, 0],
-  //   })),
-  //   edges: largeGraphData.links.map((edge, i) => ({
-  //     ...edge,
-  //     id: `${i}`,
-  //     color: getRandomColorFromSet(),
-  //   })),
-  // };
-
-  // random data to test the force layout:
-  const data = generateRandomGraph(200, 2);
-
-  // stable data to test the force layout:
-  // const data = stableData as GraphData;
-
+const simulateForces = (data: GraphData) => {
   // create a graph and populate it with data:
   const g = createGraph<GNode, GEdge>();
   data.nodes.forEach((node) => g.addNode(node.id));
@@ -59,17 +63,19 @@ const fetchGraphDataWithSimulation = async (): Promise<GraphData> => {
     const { x, y, z = 0 } = layout.getNodePosition(node.id);
     node.position = [x, y, z];
   });
-
-  return data;
 };
 
-export default async function Home({ params }: { params: LParam }) {
-  const t = await getDictionary(params.lang);
-  const graphData = await fetchGraphDataWithSimulation();
-
-  return (
-    <div className="isolate flex flex-col gap-28 pb-32">
-      <HeroSection dictionary={t} graphData={graphData} />
-    </div>
-  );
-}
+const getLargeData = (): GraphData => ({
+  nodes: largeGraphData.nodes.map((node) => ({
+    ...node,
+    color: getRandomColorFromSet(),
+    position: [0, 0, 0],
+    scale: [2, 2, 2],
+    rotation: [0, 0, 0],
+  })),
+  edges: largeGraphData.links.map((edge, i) => ({
+    ...edge,
+    id: `${i}`,
+    color: getRandomColorFromSet(),
+  })),
+});
