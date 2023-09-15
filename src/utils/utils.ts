@@ -10,20 +10,21 @@ import { ANGLE_INCREMENT } from "./constants";
 export const cn = (...inputs: ClassValue[]) => twMerge(clsx(inputs));
 
 export const generateRandomGraph = (n = 300, scale = 2): GraphData => {
+  const r = () => getRandomIntInclusive(-200, 200);
   return {
     nodes: [...Array(n).keys()].map((i) => ({
-      id: `${i}`,
+      id: `${i}s`,
       color: getRandomColorFromSet(),
-      position: [0, 0, 0],
+      position: [r(), r(), r()],
       scale: [scale, scale, scale],
       rotation: [0, 0, 0],
     })),
     edges: [...Array(n).keys()]
       .filter((i) => i)
       .map((i) => ({
-        id: `${i}`,
-        source: `${i}`,
-        target: `${Math.round(Math.random() * (i - 1))}`,
+        id: `${i}s`,
+        source: `${i}s`,
+        target: `${Math.round(Math.random() * (i - 1))}s`,
         color: "white",
       })),
   };

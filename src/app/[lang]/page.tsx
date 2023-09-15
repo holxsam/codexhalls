@@ -36,9 +36,9 @@ const fetchGraphDataWithSimulation = async (): Promise<GraphData> => {
   // };
 
   // random data to test the force layout:
-  const data = generateRandomGraph(100, 2);
+  const data = generateRandomGraph(200, 2);
 
-  // random data to test the force layout:
+  // stable data to test the force layout:
   // const data = stableData as GraphData;
 
   // create a graph and populate it with data:

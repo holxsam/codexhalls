@@ -58,9 +58,7 @@ export const GraphNode = memo(
     const textRef = useRef<Text>();
     const setHover = useGraphStore((state) => state.setNodeHoverId);
     const cameraChanging = useGraphStore((state) => state.cameraChanging);
-    const setAnimation = useGraphStore(
-      (state) => state.setNodesSpringAnimation
-    );
+    const setAnimation = useGraphStore((state) => state.setAnimating);
 
     const [s, api] = useSpring(() => ({
       from: { position: [0, 0, 0] as Vector3Array },

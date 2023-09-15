@@ -1,9 +1,8 @@
+import * as THREE from "three";
 import { useGraphStore } from "@/store/GraphStore";
 import { Vector3Array } from "@/utils/types";
 import { getRandomIntInclusive, isRefObject } from "@/utils/utils";
-import { config, useSpring } from "@react-spring/three";
-import { forwardRef, useMemo, useRef } from "react";
-import { LineBasicMaterial } from "three";
+import { forwardRef, useLayoutEffect, useMemo, useRef } from "react";
 
 const rColor = () => getRandomIntInclusive(0, 255);
 
@@ -16,28 +15,22 @@ export const Lines = forwardRef<THREE.LineSegments, LinesProps>(function Lines(
   ref
 ) {
   const edges = useGraphStore((state) => state.edges);
-  const mode = useGraphStore((state) => state.mode);
-  const matRef = useRef<LineBasicMaterial>(null);
+  const matRef = useRef<THREE.LineBasicMaterial>(null);
+  const points = useMemo(() => new Float32Array(lines.flat(2)), [lines]);
 
-  const LINES = useMemo(() => new Float32Array(lines.flat(2)), [lines]);
-
-  const [spring, api] = useSpring(
-    () => ({
-      opacity: mode === "sphere" ? 0.05 : 0.5,
-      config: config.stiff,
-      onChange: (p) => {
-        if (!isRefObject(matRef) || !matRef.current) return;
-        matRef.current.opacity = p.value.opacity;
-      },
-    }),
-    [mode]
-  );
+  useLayoutEffect(() => {
+    if (!isRefObject(ref) || !ref.current) return;
+    // ref.current.computeLineDistances();
+  });
 
   const colors = useMemo(() => {
     const colors = edges
       .flatMap(() => {
-        const color: Vector3Array = [rColor(), rColor(), rColor()];
-        // const color: Vector3Array = [255, 255, 255];
+        // const color = [rColor(), rColor(), rColor(), rColor()];
+        // const color = [255, 255, 255, rColor()];
+        // const color = [255, 255, 255, 255];
+        const color = [255, 255, 255];
+        // const color = [rColor(), rColor(), rColor()];
         return [color, color];
       })
       .flat();
@@ -49,8 +42,8 @@ export const Lines = forwardRef<THREE.LineSegments, LinesProps>(function Lines(
       <bufferGeometry>
         <bufferAttribute
           attach="attributes-position"
-          array={LINES}
-          count={LINES.length / 3}
+          array={points}
+          count={points.length / 3}
           itemSize={3}
         />
         <bufferAttribute
@@ -61,7 +54,7 @@ export const Lines = forwardRef<THREE.LineSegments, LinesProps>(function Lines(
           normalized
         />
       </bufferGeometry>
-      <lineBasicMaterial ref={matRef} opacity={0.05} vertexColors transparent />
+      <lineBasicMaterial ref={matRef} vertexColors transparent />
     </lineSegments>
   );
 });

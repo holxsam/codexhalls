@@ -3,6 +3,7 @@ import { Vector3Array } from "@/utils/types";
 import { isRefObject } from "@/utils/utils";
 import { forwardRef, useMemo, useLayoutEffect } from "react";
 import { InstancedMeshProps, useFrame } from "@react-three/fiber";
+import { useGraphStore } from "@/store/GraphStore";
 
 const o = new Object3D(); // reusable object3D
 const tempColor = new Color(); // reusable color
@@ -20,19 +21,27 @@ export const Boxes = forwardRef<THREE.InstancedMesh, BoxesProps>(function Boxes(
   { maxLength = 10000, positions, scales, rotations, colors },
   ref
 ) {
+  const nodes = useGraphStore((state) => state.nodes);
+  const connections = useGraphStore((state) => state.connections);
+  const instanceIdToNodeId = useGraphStore((state) => state.instanceIdToNodeId);
   const COLORS = useMemo(() => new Float32Array(colors.flat()), [colors]);
   const length = positions.length;
 
+  const setHover = useGraphStore((state) => state.setNodeHoverId);
+
   const onPointerOver: InstancedMeshProps["onPointerOver"] = (e) => {
     e.stopPropagation(); // stops the raycasting from picking objects behind
-    const id = e.instanceId;
+    const iId = e.instanceId;
 
     // prettier-ignore
-    if (!isRefObject(ref) || !ref.current || ref.current.instanceColor === null || id === undefined) return;
+    if (!isRefObject(ref) || !ref.current || ref.current.instanceColor === null || iId === undefined) return;
 
-    ref.current.getColorAt(id, prevC);
-    ref.current.setColorAt(id, prevC.clone().addScalar(0.3));
+    // const instanceIdToNodeId;
+    ref.current.getColorAt(iId, prevC);
+    ref.current.setColorAt(iId, prevC.clone().addScalar(0.3));
     ref.current.instanceColor.needsUpdate = true;
+
+    setHover(instanceIdToNodeId[iId]);
   };
 
   const onPointerOut: InstancedMeshProps["onPointerOut"] = (e) => {
@@ -43,11 +52,23 @@ export const Boxes = forwardRef<THREE.InstancedMesh, BoxesProps>(function Boxes(
 
     ref.current.setColorAt(id, prevC);
     ref.current.instanceColor.needsUpdate = true;
+
+    setHover("");
   };
 
   const onClick: InstancedMeshProps["onClick"] = (e) => {
     e.stopPropagation();
-    console.log(e.instanceId);
+    const id = e.instanceId;
+
+    if (id === undefined) return;
+
+    console.log("----------------");
+    console.log(
+      "main node",
+      id,
+      useGraphStore.getState().instanceIdToNodeId[id]
+    );
+    console.log("connected", connections[id]);
   };
 
   useLayoutEffect(() => {

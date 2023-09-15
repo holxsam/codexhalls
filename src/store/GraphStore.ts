@@ -1,11 +1,7 @@
 import { Vector3Array } from "@/utils/types";
-import { isRefObject } from "@/utils/utils";
-import { MutableRefObject, RefObject, createRef } from "react";
-import { InstancedMesh, LineSegments, Matrix4, Object3D } from "three";
+import { RefObject, createRef } from "react";
+import { InstancedMesh, LineSegments } from "three";
 import { create } from "zustand";
-
-const o = new Object3D(); // reusable object3D
-const m = new Matrix4(); // reusable matrix
 
 export type GNode = {
   id: string;
@@ -42,6 +38,18 @@ export type GraphEdgeWithRef = GEdge & {
   targetRef: RefObject<THREE.Mesh> | null;
 };
 
+export type NodeConnections = {
+  sources: string[]; // string of node id's
+  targets: string[]; // string of node id's
+};
+
+export type NodeConnectionsMap = {
+  [id: string]: NodeConnections;
+};
+
+export type InstanceToNodeIdMap = { [instanceId: number]: string };
+export type NodeToInstanceIdMap = { [nodeId: string]: number };
+
 export type GraphState = {
   nodes: GNode[];
   edges: GEdge[];
@@ -52,9 +60,13 @@ export type GraphState = {
   nodeHoverId: string;
   nodeDragId: string;
   cameraChanging: boolean;
-  nodesSpringAnimation: boolean;
-  mode: "sphere" | "tree";
   animating: boolean;
+  mode: "sphere" | "tree";
+
+  // useful data structures based of the nodes and edges:
+  connections: NodeConnectionsMap;
+  instanceIdToNodeId: InstanceToNodeIdMap;
+  nodeIdToInstanceId: NodeToInstanceIdMap;
 };
 
 export type GraphAction = {
@@ -62,10 +74,9 @@ export type GraphAction = {
   setNodeHoverId: (id: string) => void;
   setNodeDragId: (id: string) => void;
   setCameraChanging: (value: boolean) => void;
-  setNodesSpringAnimation: (value: boolean) => void;
+  setAnimating: (value: boolean) => void;
   setMode: (value: GraphState["mode"]) => void;
   toggleMode: () => void;
-  setAnimating: (value: boolean) => void;
 };
 
 export const useGraphStore = create<GraphState & GraphAction>()((set) => ({
@@ -79,55 +90,45 @@ export const useGraphStore = create<GraphState & GraphAction>()((set) => ({
   nodeHoverId: "",
   nodeDragId: "",
   cameraChanging: false,
-  nodesSpringAnimation: true,
-  mode: "sphere",
   animating: false,
+  mode: "sphere",
+
+  connections: {},
+  instanceIdToNodeId: {},
+  nodeIdToInstanceId: {},
 
   // actions:
   initGraph: (data) => {
-    // const nodes: GraphNodeWithRef[] = data.nodes.map((node) => ({
-    //   ...node,
-    //   ref: createRef<THREE.Mesh>(),
-    //   // connections: data.edges
-    //   //   .filter((edge) => node.id === edge.source || node.id === edge.target)
-    //   //   .map((edge) => edge.id),
-    //   connections: {
-    //     sources: data.edges
-    //       .filter((edge) => node.id === edge.source)
-    //       .map((edge) => edge.target),
-    //     targets: data.edges
-    //       .filter((edge) => node.id === edge.target)
-    //       .map((edge) => edge.source),
-    //   },
-    // }));
+    const instanceIdToNodeId: InstanceToNodeIdMap = {};
+    const nodeIdToInstanceId: NodeToInstanceIdMap = {};
+    const connections: NodeConnectionsMap = {};
 
-    // const edges: GraphEdgeWithRef[] = data.edges.map((edge) => {
-    //   const source = nodes.find((node) => node.id === edge.source);
-    //   const target = nodes.find((node) => node.id === edge.target);
+    data.nodes.forEach((node, iID) => {
+      instanceIdToNodeId[iID] = node.id;
+      nodeIdToInstanceId[node.id] = iID;
+      connections[node.id] = {
+        sources: data.edges
+          .filter((edge) => node.id === edge.source)
+          .map((edge) => edge.target),
+        targets: data.edges
+          .filter((edge) => node.id === edge.target)
+          .map((edge) => edge.source),
+      };
+    });
 
-    //   return {
-    //     ...edge,
-    //     sourceRef: source ? source.ref : null,
-    //     targetRef: target ? target.ref : null,
-    //   };
-    // });
-
-    set((state) => ({ nodes: data.nodes, edges: data.edges }));
+    set(() => ({
+      nodes: data.nodes,
+      edges: data.edges,
+      connections,
+      instanceIdToNodeId,
+      nodeIdToInstanceId,
+    }));
   },
-  setNodeHoverId: (id) => set((state) => ({ nodeHoverId: id })),
-  setNodeDragId: (id) => set((state) => ({ nodeDragId: id })),
-  setCameraChanging: (value) => {
-    set((state) => ({ cameraChanging: value }));
-  },
-  setNodesSpringAnimation: (value) =>
-    set((state) => ({ nodesSpringAnimation: value })),
-
-  setMode: (mode) => set((state) => ({ mode })),
+  setNodeHoverId: (id) => set(() => ({ nodeHoverId: id })),
+  setNodeDragId: (id) => set(() => ({ nodeDragId: id })),
+  setCameraChanging: (value) => set(() => ({ cameraChanging: value })),
+  setAnimating: (value) => set(() => ({ animating: value })),
+  setMode: (mode) => set(() => ({ mode })),
   toggleMode: () =>
     set(({ mode }) => ({ mode: mode === "sphere" ? "tree" : "sphere" })),
-  // setAnimating: (value) => set((state) => ({ animating: value })),
-  setAnimating: (value) =>
-    set((state) => {
-      return { animating: value };
-    }),
 }));

@@ -9,10 +9,10 @@ import {
   useLayoutEffect,
   useCallback,
 } from "react";
-import { Canvas, useFrame, useThree } from "@react-three/fiber";
+import { Canvas } from "@react-three/fiber";
 import { GraphData, useGraphStore } from "@/store/GraphStore";
 import { useKeyboardDebug } from "@/hooks/useKeyboardDebug";
-import { config, useSpring, useSpringRef } from "@react-spring/three";
+import { config, useSpring } from "@react-spring/three";
 import { Vector3Array } from "@/utils/types";
 import { Lights } from "./Lights";
 import { Lines } from "./Lines";
@@ -26,6 +26,7 @@ import {
   hexToArray,
   isRefObject,
 } from "@/utils/utils";
+import { LineHighlight } from "./LineHighlight";
 
 THREE.ColorManagement.enabled = true;
 
@@ -78,11 +79,13 @@ const GraphNodes = () => {
 
   const nodes = useGraphStore((state) => state.nodes);
   const edges = useGraphStore((state) => state.edges);
-  const hoverId = useGraphStore((state) => state.nodeHoverId);
 
+  const nodeIdMap = useGraphStore((state) => state.instanceIdToNodeId);
   const mode = useGraphStore((state) => state.mode);
+
   const setMode = useGraphStore((state) => state.setMode);
   const setAnimating = useGraphStore((state) => state.setAnimating);
+  const setHover = useGraphStore((state) => state.setNodeHoverId);
 
   const radius = useMemo(
     () => getFibonocciSphereRadiusFromDistance(nodes.length, 15),
@@ -157,41 +160,52 @@ const GraphNodes = () => {
   // ex: ["cat", "dog", "bob"] -> { 0: "cat", 1: "dog", 2: "bob"}
   // we need it in this form or else useSpring cannot animate the values
   // it cannot animate an array of arrays which is what startPositions/endPositions are
-  const a = useMemo(() => Object.assign({}, startPositions), [startPositions]);
-  const b = useMemo(() => Object.assign({}, endPositions), [endPositions]);
+  const sphere = useMemo(
+    () => Object.assign({ opacity: 0.05 }, startPositions),
+    [startPositions]
+  );
+
+  const tree = useMemo(
+    () => Object.assign({ opacity: 0.2 }, endPositions),
+    [endPositions]
+  );
 
   const [spring, api] = useSpring(
     {
-      from: mode === "tree" ? a : b,
-      to: mode === "tree" ? b : a,
+      from: mode === "tree" ? sphere : tree,
+      to: mode === "tree" ? tree : sphere,
       config: config.stiff,
       onStart: () => {
         setAnimating(true);
+        setHover("");
       },
       onChange: (result) => {
         if (!boxesRef.current || !linesRef.current) return;
 
-        const length = endPositions.length;
-        const positions: { [id: string]: Vector3Array } = result.value;
+        const positions = result.value as typeof sphere;
 
-        for (let i = 0; i < length; i++) {
-          const p = positions[i];
-          const id = nodes[i].id;
+        // iId is the instanceId
+        for (let iId = 0; iId < length; iId++) {
+          const p = positions[iId];
+          const id = nodeIdMap[iId];
 
           // mutates the vector to the updated position
           nodePositionVectorMap.current.get(id)?.set(p[0], p[1], p[2]);
 
           // updates the position matrix:
-          boxesRef.current.getMatrixAt(i, o.matrix);
+          boxesRef.current.getMatrixAt(iId, o.matrix);
           o.matrix.decompose(o.position, o.quaternion, o.scale);
           o.position.set(p[0], p[1], p[2]);
           o.updateMatrix();
-          boxesRef.current.setMatrixAt(i, o.matrix);
+          boxesRef.current.setMatrixAt(iId, o.matrix);
         }
 
         // tells three.js it needs to update its render
         boxesRef.current.instanceMatrix.needsUpdate = true;
         linesRef.current.geometry.setFromPoints(points.current);
+
+        // @ts-ignore / update opacity
+        linesRef.current.material.opacity = positions.opacity;
       },
       onRest: () => {
         setAnimating(false);
@@ -214,6 +228,7 @@ const GraphNodes = () => {
         rotations={rotations}
       />
       <Lines ref={linesRef as Ref<THREE.LineSegments>} lines={initialLines} />
+      <LineHighlight />
     </>
   );
 };
