@@ -51,7 +51,7 @@ const customFonts = [baseFont.variable, monoFont.variable].join(" ");
 //   which informs (via a data-attribute) if we are on a route that should bleed into the header
 // - we can then apply fixed or sticky based on that data-attribute
 // - its an array incase there other other pages that need to bleed
-const bleedRoutes = ["/"];
+const bleedRoutes = ["/", "/database", "/weapons", "/wayfinders"];
 
 type RootLayoutProps = {
   children: React.ReactNode;

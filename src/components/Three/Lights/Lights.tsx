@@ -34,7 +34,7 @@ export const Lights = () => {
 
   return (
     <>
-      <ambientLight intensity={0.2} />
+      <ambientLight intensity={0.4} />
       <pointLight
         ref={pointLightRef}
         position={[100, 100, 0]}

@@ -1,79 +1,21 @@
-"use client";
-
 import * as THREE from "three";
-import {
-  Ref,
-  useMemo,
-  useRef,
-  useEffect,
-  useLayoutEffect,
-  useCallback,
-} from "react";
-import { Canvas } from "@react-three/fiber";
-import { GraphData, useGraphStore } from "@/store/GraphStore";
+import { InstancedNodes } from "@/components/Three/InstancedNodes/InstancedNodes";
+import { LineHighlight } from "@/components/Three/LineHighlight/LineHighlight";
+import { Lines } from "@/components/Three/Lines/Lines";
 import { useKeyboardDebug } from "@/hooks/useKeyboardDebug";
-import { config, useSpring } from "@react-spring/three";
+import { useGraphStore } from "@/store/GraphStore";
 import { Vector3Array } from "@/utils/types";
-import { Lights } from "./Lights";
-import { Lines } from "./Lines";
-import { InstancedNodes } from "./InstancedNodes";
-import { Controls } from "./Controls";
-import { Helpers } from "./Helpers";
-import { DISTANCE_FROM_ORIGIN } from "@/utils/constants";
 import {
-  getFibonocciSphere,
   getFibonocciSphereRadiusFromDistance,
+  getFibonocciSphere,
   hexToArray,
-  isRefObject,
 } from "@/utils/utils";
-import { LineHighlight } from "./LineHighlight";
+import { useSpring, config } from "@react-spring/three";
+import { memo, useMemo, useRef, Ref } from "react";
 
-THREE.ColorManagement.enabled = true;
+const o = new THREE.Object3D(); // reusable object
 
-const cameraPosition = new THREE.Vector3().setFromSphericalCoords(
-  DISTANCE_FROM_ORIGIN / 4,
-  Math.PI / 3,
-  0
-);
-
-export default function Graph({ data }: { data: GraphData }) {
-  const initGraph = useGraphStore((state) => state.initGraph);
-
-  useEffect(() => {
-    initGraph(data);
-  }, [data, initGraph]);
-
-  return (
-    <div className="relative w-full h-screen-dvh">
-      <ModeButton />
-      <Canvas camera={{ position: cameraPosition }}>
-        <Lights />
-        <Scene />
-        <Controls />
-        <Helpers />
-      </Canvas>
-    </div>
-  );
-}
-
-const ModeButton = () => {
-  const toggleMode = useGraphStore((state) => state.toggleMode);
-  const mode = useGraphStore((state) => state.mode);
-
-  return (
-    <button
-      type="button"
-      className="z-10 absolute bottom-0 left-0 rounded-md bg-indigo-500 uppercase font-medium w-24 h-10 m-2"
-      onClick={toggleMode}
-    >
-      {mode}
-    </button>
-  );
-};
-
-const o = new THREE.Object3D(); // reusable matrix
-
-const GraphNodes = () => {
+export const GraphScene = memo(function GraphScene() {
   const boxesRef = useGraphStore((state) => state.nodesRef);
   const linesRef = useGraphStore((state) => state.edgesRef);
 
@@ -231,16 +173,4 @@ const GraphNodes = () => {
       <LineHighlight />
     </>
   );
-};
-
-function Scene() {
-  return (
-    <>
-      <GraphNodes />
-      {/* <mesh position={[0, 0, 0]}>
-        <sphereGeometry args={[1]}></sphereGeometry>
-        <meshStandardMaterial color="red" />
-      </mesh> */}
-    </>
-  );
-}
+});

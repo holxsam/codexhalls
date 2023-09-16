@@ -26,7 +26,7 @@ export const InstancedNodes = forwardRef<THREE.InstancedMesh, BoxesProps>(
       (state) => state.instanceIdToNodeId
     );
     const COLORS = useMemo(() => new Float32Array(colors.flat()), [colors]);
-    const length = positions.length;
+    // const length = positions.length;
 
     const setHover = useGraphStore((state) => state.setNodeHoverId);
 
@@ -71,9 +71,21 @@ export const InstancedNodes = forwardRef<THREE.InstancedMesh, BoxesProps>(
     useLayoutEffect(() => {
       if (!isRefObject(ref) || !ref.current) return;
       ref.current.setColorAt(0, tempColor); // needs to be called at least once before render
-      if (ref.current.instanceColor === null) return; // once setColor is called once instanceColor should no longer be null
+    }, [ref]);
+
+    useLayoutEffect(() => {
+      // type guards to satisfy typescript
+      if (
+        !isRefObject(ref) ||
+        !ref.current ||
+        ref.current.instanceColor === null // once setColor is called once instanceColor should no longer be null
+      )
+        return;
+
+      // if (ref.current.instanceColor === null) return; // once setColor is called once instanceColor should no longer be null
 
       // set initial positions, scales, rotations, and colors:
+      const length = positions.length;
       for (let i = 0; i < length; i++) {
         // GEOMETRIES:
         o.position.set(...positions[i]);
@@ -89,7 +101,7 @@ export const InstancedNodes = forwardRef<THREE.InstancedMesh, BoxesProps>(
       // commit the updates:
       ref.current.instanceMatrix.needsUpdate = true;
       ref.current.instanceColor.needsUpdate = true;
-    }, [positions, scales, rotations, colors]);
+    }, [ref, positions, scales, rotations, colors]);
 
     // useFrame((state, delta) => {
     //   if (useGraphStore.getState().animating) return; // for performance

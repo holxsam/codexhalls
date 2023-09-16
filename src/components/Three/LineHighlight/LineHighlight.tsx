@@ -4,7 +4,7 @@ import { Vector3Array } from "@/utils/types";
 import { LineSegments2 } from "three-stdlib";
 import { useFrame } from "@react-three/fiber";
 import { Line } from "@react-three/drei";
-import { useMemo, useRef } from "react";
+import { useCallback, useMemo, useRef } from "react";
 
 const o = new THREE.Object3D();
 
@@ -40,15 +40,19 @@ export const LineHighlight = ({
 
   const dashProps = neuronFiring;
 
-  const getPosition = (nodeId: string) => {
-    const iId = nodeIdToInstanceId[nodeId];
-    nodesRef.current?.getMatrixAt(iId, o.matrix);
-    o.matrix.decompose(o.position, o.quaternion, o.scale);
-    return o.position.toArray();
-  };
+  const getPosition = useCallback(
+    (nodeId: string) => {
+      const iId = nodeIdToInstanceId[nodeId];
+      nodesRef.current?.getMatrixAt(iId, o.matrix);
+      o.matrix.decompose(o.position, o.quaternion, o.scale);
+      return o.position.toArray();
+    },
+    [nodesRef, nodeIdToInstanceId]
+  );
 
   const points = useMemo(() => {
-    if (nodeHoverId === "" || !nodesRef.current) return [];
+    // if (nodeHoverId === "" || !nodesRef.current) return [];
+    if (nodeHoverId === "") return [];
 
     const { sources, targets } = connections[nodeHoverId];
     const mainNodePosition = getPosition(nodeHoverId);
@@ -62,7 +66,7 @@ export const LineHighlight = ({
     );
 
     return points;
-  }, [nodeHoverId, connections]);
+  }, [nodeHoverId, connections, getPosition]);
 
   useFrame((state, delta) => {
     ref.current.material.uniforms.dashOffset.value += delta * 1000;

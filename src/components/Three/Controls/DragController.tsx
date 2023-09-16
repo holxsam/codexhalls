@@ -1,5 +1,7 @@
+// @deprecated
+
 import { useGraphStore } from "@/store/GraphStore";
-import { OrbitControls } from "@react-three/drei";
+import { OrbitControls, PresentationControls } from "@react-three/drei";
 import { useThree } from "@react-three/fiber";
 import { useState } from "react";
 import { DragControls } from "three/examples/jsm/controls/DragControls.js";
@@ -9,20 +11,43 @@ export const Controls = () => {
   const isDragging = useGraphStore((state) => state.nodeDragId !== "");
   const setCameraChanging = useGraphStore((state) => state.setCameraChanging);
 
-  return (
-    <OrbitControls
-      makeDefault
-      // autoRotate
-      // autoRotateSpeed={0.5}
-      enabled={!isDragging}
-      onStart={(e) => {
-        setCameraChanging(true);
-      }}
-      onEnd={() => {
-        setCameraChanging(false);
-      }}
-    />
-  );
+  return <></>;
+  // return (
+  //   <PresentationControls
+
+  //     // autoRotate
+  //     // autoRotateSpeed={0.5}
+
+  //     enableZoom={false}
+  //     enabled={!isDragging}
+  //     onStart={(e) => {
+  //       setCameraChanging(true);
+  //     }}
+  //     onEnd={() => {
+  //       setCameraChanging(false);
+  //     }}
+  //   />
+  // );
+  // return (
+  //   <OrbitControls
+  //     makeDefault
+  //     // autoRotate
+  //     // autoRotateSpeed={0.5}
+
+  //     maxPolarAngle={Infinity}
+  //     minPolarAngle={-Infinity}
+  //     maxAzimuthAngle={Infinity}
+  //     minAzimuthAngle={-Infinity}
+  //     enableZoom={false}
+  //     enabled={!isDragging}
+  //     onStart={(e) => {
+  //       setCameraChanging(true);
+  //     }}
+  //     onEnd={() => {
+  //       setCameraChanging(false);
+  //     }}
+  //   />
+  // );
 };
 
 const useDragControls = () => {

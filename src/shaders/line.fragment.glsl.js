@@ -1,4 +1,4 @@
-export default /* glsl */ `
+export default fragmentShader = /* glsl */ `
 uniform vec3 diffuse;
 uniform float opacity;
 #ifndef FLAT_SHADED

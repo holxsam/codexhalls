@@ -1,30 +1,38 @@
 import { HeroSection } from "@/components/HeroSection/HeroSection";
 import { getDictionary } from "@/utils/get-dictionary";
-import { LParam } from "./layout";
+import { LParam } from "../layout";
 import { generateRandomGraph, getRandomColorFromSet } from "@/utils/utils";
 import { GEdge, GNode, GraphData } from "@/store/GraphStore";
 import forceLayout from "ngraph.forcelayout";
 import createGraph from "ngraph.graph";
 import largeGraphData from "@/test-data/large-graph-data.json";
 import stableData from "@/test-data/stable-data.json";
+import { ReactNode } from "react";
 
-export default async function Home({ params }: { params: LParam }) {
+export default async function SearchLayout({
+  params,
+  children,
+}: {
+  params: LParam;
+  children: ReactNode;
+}) {
   const t = await getDictionary(params.lang);
   const graphData = await fetchGraphDataWithSimulation();
 
   return (
     <div className="isolate flex flex-col gap-28 pb-32">
       <HeroSection dictionary={t} graphData={graphData} />
+      <div className="">{children}</div>
     </div>
   );
 }
 
 const fetchGraphDataWithSimulation = async (): Promise<GraphData> => {
   // large data to test for performance:
-  // const data = getLargeData();
+  const data = getLargeData();
 
   // random data to test the force layout:
-  const data = generateRandomGraph(200, 2);
+  // const data = generateRandomGraph(200, 2);
 
   // stable data to test the force layout:
   // const data = stableData as GraphData;

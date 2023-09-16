@@ -1,6 +1,6 @@
 import { Dictionary } from "@/app/[lang]/layout";
 import { GraphData } from "@/store/GraphStore";
-import Graph from "../Graph/Graph";
+import Graph from "../Three/Graph/Graph";
 
 export const HeroSection = ({
   dictionary,
