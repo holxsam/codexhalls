@@ -2,24 +2,25 @@ import * as THREE from "three";
 import { useThree } from "@react-three/fiber";
 import { useSpring, SpringConfig } from "@react-spring/three";
 import { useGesture } from "@use-gesture/react";
-import { ReactNode, useMemo, useEffect, useRef } from "react";
+import { ReactNode, useEffect, useMemo, useRef } from "react";
+import { Vector3Array } from "@/utils/types";
 
+// we reuse these in our animation loop:
 const xVector = new THREE.Vector3(1, 0, 0).normalize();
 const yVector = new THREE.Vector3(0, 1, 0).normalize();
 const quaternionX = new THREE.Quaternion();
 const quaternionY = new THREE.Quaternion();
-// const o = new THREE.Object3D();
+const o = new THREE.Object3D();
 
 export type ControlsProps = {
   global?: boolean;
   cursor?: boolean;
-  zoom?: number;
-  rotation?: [number, number, number];
+  // zoom?: number;
+  rotation?: Vector3Array;
   config?: SpringConfig;
   enabled?: boolean;
   children?: ReactNode;
   domElement?: HTMLElement;
-  enableZoom?: boolean;
   enableMobileControls?: boolean;
 };
 
@@ -30,16 +31,32 @@ export const Controls = ({
   cursor = false,
   children,
   rotation = [0, 0, 0],
-  zoom = 1,
+  // zoom = 1,
   config = { mass: 1, tension: 170, friction: 26 },
-  enableZoom = true,
   enableMobileControls = true,
 }: ControlsProps) => {
   const groupRef = useRef<THREE.Group>(null!);
   const camera = useThree((state) => state.camera);
   const gl = useThree((state) => state.gl);
   const explDomElement = domElement || gl.domElement;
-  const o = useMemo(() => new THREE.Object3D(), [groupRef]);
+
+  // we only want to do this once (when the component first mounts)
+  // so ignore the react-hooks/exhaustive-deps warning for 'rotation'
+  const initialQuaternion = useMemo(
+    () =>
+      new THREE.Quaternion()
+        .setFromEuler(new THREE.Euler(...rotation), false)
+        .toArray(),
+    []
+  );
+
+  // we only want to do this once (when the component first mounts)
+  // so ignore the react-hooks/exhaustive-deps warning for 'rotation'
+  useEffect(() => {
+    // set the initial rotation:
+    groupRef.current.rotation.set(...rotation);
+    o.rotation.set(...rotation);
+  }, []);
 
   useEffect(() => {
     if (global && cursor && enabled) {
@@ -52,20 +69,14 @@ export const Controls = ({
     }
   }, [gl, global, cursor, explDomElement, enabled]);
 
-  const [spring, api] = useSpring(() => ({
-    quaternion: [0, 0, 0, 1],
-    config,
-  }));
-
-  const isPointerEvent = (
-    event: PointerEvent | MouseEvent | TouchEvent | KeyboardEvent
-  ): event is PointerEvent => {
-    return event.type.includes("pointer");
-  };
-
   useEffect(() => {
     gl.domElement.style.touchAction = enableMobileControls ? "none" : "auto";
   }, [enableMobileControls, gl]);
+
+  const [spring, api] = useSpring(() => ({
+    quaternion: initialQuaternion,
+    config,
+  }));
 
   const bind = useGesture(
     {
@@ -210,6 +221,13 @@ export const Controls = ({
     // @ts-ignore: this is an issue with react-three-fiber type definitions
     <group ref={groupRef} {...bind?.()}>
       {children}
+      {/* <axesHelper args={[60]} /> */}
     </group>
   );
+};
+
+const isPointerEvent = (
+  event: PointerEvent | MouseEvent | TouchEvent | KeyboardEvent
+): event is PointerEvent => {
+  return event.type.includes("pointer");
 };
