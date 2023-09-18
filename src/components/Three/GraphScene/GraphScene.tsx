@@ -2,7 +2,6 @@ import * as THREE from "three";
 import { InstancedNodes } from "@/components/Three/InstancedNodes/InstancedNodes";
 import { LineHighlight } from "@/components/Three/LineHighlight/LineHighlight";
 import { Lines } from "@/components/Three/Lines/Lines";
-import { useKeyboardDebug } from "@/hooks/useKeyboardDebug";
 import { useGraphStore } from "@/store/GraphStore";
 import { Vector3Array } from "@/utils/types";
 import {
@@ -155,10 +154,6 @@ export const GraphScene = memo(function GraphScene() {
     },
     [mode]
   );
-
-  useKeyboardDebug("s", () => {
-    setMode(mode === "sphere" ? "tree" : "sphere");
-  });
 
   return (
     <>

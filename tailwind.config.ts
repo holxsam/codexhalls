@@ -113,7 +113,10 @@ const config: Config = {
     plugin(function ({ addUtilities }) {
       addUtilities({
         ".pack-content": {
-          "@apply mx-auto max-w-5xl px-4 w-full": {},
+          "@apply mx-auto max-w-7xl px-4 w-full": {},
+        },
+        ".fullscreen-pack-content": {
+          "@apply mx-auto px-4 w-full": {},
         },
         ".custom-scrollbar-tiny": {
           "@apply scrollbar-thin scrollbar-thumb-zinc-600/50 hover:scrollbar-track-zinc-800/20 hover:scrollbar-thumb-zinc-500":
@@ -134,7 +137,7 @@ const config: Config = {
           // this class handles the 100vh on mobile address bar issue
           height: [
             "100vh", // fallback if dvh is not supported
-            "100dvh", // this solves the issue
+            "100svh", // this solves the issue
           ],
         },
       });

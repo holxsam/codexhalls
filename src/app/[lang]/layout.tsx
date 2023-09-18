@@ -51,7 +51,8 @@ const customFonts = [baseFont.variable, monoFont.variable].join(" ");
 //   which informs (via a data-attribute) if we are on a route that should bleed into the header
 // - we can then apply fixed or sticky based on that data-attribute
 // - its an array incase there other other pages that need to bleed
-const bleedRoutes = ["/", "/database", "/weapons", "/wayfinders"];
+// const bleedRoutes = ["/", "/database", "/weapons", "/wayfinders"];
+const bleedRoutes: string[] = [];
 
 type RootLayoutProps = {
   children: React.ReactNode;
@@ -86,7 +87,7 @@ export default async function RootLayout({
               <NavBar />
             </Header>
             <main className="-z-10 isolate min-h-screen">{children}</main>
-            <footer className="-z-20 isolate">
+            <footer className="isolate">
               <Footer />
             </footer>
           </DictionaryProvider>

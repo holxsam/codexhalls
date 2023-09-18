@@ -6,11 +6,12 @@ import { GraphData, useGraphStore } from "@/store/GraphStore";
 import { Lights } from "../Lights/Lights";
 import { Helpers } from "../Helpers/Helpers";
 import { DISTANCE_FROM_ORIGIN } from "@/utils/constants";
-import { motion, useScroll } from "framer-motion";
+import { motion, useScroll, useTransform } from "framer-motion";
 import { useEffect } from "react";
 import { VisualDebug } from "../../VisualDebug/VisualDebug";
 import { GraphSceneAndControls } from "../GraphSceneAndControls/GraphSceneAndControls";
 import { SceneOverlay } from "../SceneOverlay/SceneOverlay";
+import { memo } from "react";
 
 THREE.ColorManagement.enabled = true;
 
@@ -20,31 +21,54 @@ const cameraPosition = new THREE.Vector3().setFromSphericalCoords(
   0
 );
 
-export default function Graph({ data }: { data: GraphData }) {
+export function Graph({ data }: { data: GraphData }) {
   const initGraph = useGraphStore((state) => state.initGraph);
+  const toggleMode = useGraphStore((state) => state.toggleMode);
 
-  const { scrollY } = useScroll({});
+  // const { scrollY } = useScroll({});
+  // const { scrollY } = useScroll();
+  // const y = useTransform(scrollY, [0, 600], ["0%", "50%"]);
+  // const opacity = useTransform(scrollY, [0, 800], [1, 0]);
 
   useEffect(() => {
+    const toggleGraphMode = (e: KeyboardEvent) => {
+      if (e.ctrlKey && e.key === "g") {
+        e.preventDefault();
+        toggleMode();
+      }
+    };
+
+    window.addEventListener("keydown", toggleGraphMode);
+
+    return () => {
+      window.removeEventListener("keydown", toggleGraphMode);
+    };
+  }, []);
+
+  // MUSE LEAVE 'data' out of the dependency for now
+  // We expect 'data' to not change between routes since it was fetched by the layout
+  // and passed in to this component as a prop.
+  // However, that is NOT the case, even tho its supposed to be cached by the layout.
+  // Most likely a next 13 bug.
+  useEffect(() => {
     initGraph(data);
-  }, [data, initGraph]);
+  }, []);
 
   return (
     <motion.div
-      style={{
-        y: scrollY,
-      }}
+      // style={{
+      //   y,
+      //   opacity,
+      // }}
       className="relative w-full h-screen-dvh"
       onContextMenu={(e) => {
         e.preventDefault();
       }}
     >
       <SceneOverlay>
-        <ModeButton />
-        <MobileControlsButton />
         <VisualDebug />
       </SceneOverlay>
-      <Canvas camera={{ position: cameraPosition }}>
+      <Canvas camera={{ position: cameraPosition, fov: 40 }}>
         <Lights />
         <GraphSceneAndControls />
         <Helpers
@@ -56,35 +80,3 @@ export default function Graph({ data }: { data: GraphData }) {
     </motion.div>
   );
 }
-
-const ModeButton = () => {
-  const toggleMode = useGraphStore((state) => state.toggleMode);
-  const mode = useGraphStore((state) => state.mode);
-
-  return (
-    <button
-      type="button"
-      className="rounded-md bg-indigo-500 uppercase font-medium w-24 h-10"
-      onClick={toggleMode}
-    >
-      {mode}
-    </button>
-  );
-};
-
-const MobileControlsButton = () => {
-  const enableMobile = useGraphStore((state) => state.enableMobileControls);
-  const setMobile = useGraphStore((state) => state.setEnableMobileControls);
-
-  const toggleTouchControls = () => setMobile(!enableMobile);
-
-  return (
-    <button
-      type="button"
-      className="rounded-md bg-indigo-500 uppercase font-medium w-24 h-10"
-      onPointerDown={toggleTouchControls}
-    >
-      {enableMobile ? "touch" : "normal"}
-    </button>
-  );
-};

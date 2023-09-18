@@ -47,7 +47,7 @@ export type GraphState = {
   cameraChanging: boolean;
   animating: boolean;
   mode: "sphere" | "tree";
-  enableMobileControls: boolean;
+  touchControls: boolean;
 
   // useful data structures based of the nodes and edges:
   connections: NodeConnectionsMap;
@@ -63,7 +63,8 @@ export type GraphAction = {
   setAnimating: (value: boolean) => void;
   setMode: (value: GraphState["mode"]) => void;
   toggleMode: () => void;
-  setEnableMobileControls: (value: boolean) => void;
+  setTouchControls: (value: boolean) => void;
+  toggleTouchControls: () => void;
 };
 
 export const useGraphStore = create<GraphState & GraphAction>()((set) => ({
@@ -79,7 +80,7 @@ export const useGraphStore = create<GraphState & GraphAction>()((set) => ({
   cameraChanging: false,
   animating: false,
   mode: "sphere",
-  enableMobileControls: true, // needs to be false in production by default
+  touchControls: true, // needs to be false in production by default
 
   connections: {},
   instanceIdToNodeId: {},
@@ -119,5 +120,7 @@ export const useGraphStore = create<GraphState & GraphAction>()((set) => ({
   setMode: (mode) => set(() => ({ mode })),
   toggleMode: () =>
     set(({ mode }) => ({ mode: mode === "sphere" ? "tree" : "sphere" })),
-  setEnableMobileControls: (v) => set(() => ({ enableMobileControls: v })),
+  setTouchControls: (v) => set(() => ({ touchControls: v })),
+  toggleTouchControls: () =>
+    set((state) => ({ touchControls: !state.touchControls })),
 }));

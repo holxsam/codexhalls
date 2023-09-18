@@ -1,13 +1,15 @@
-import { HeroSection } from "@/components/HeroSection/HeroSection";
 import { getDictionary } from "@/utils/get-dictionary";
 import { LParam } from "../layout";
-import { generateRandomGraph, getRandomColorFromSet } from "@/utils/utils";
+import { cn, generateRandomGraph, getRandomColorFromSet } from "@/utils/utils";
 import { GEdge, GNode, GraphData } from "@/store/GraphStore";
 import forceLayout from "ngraph.forcelayout";
 import createGraph from "ngraph.graph";
 import largeGraphData from "@/test-data/large-graph-data.json";
 import stableData from "@/test-data/stable-data.json";
-import { ReactNode } from "react";
+import { ReactNode, cache } from "react";
+import { SearchBar } from "@/components/SearchBar/SearchBar";
+import { Graph } from "@/components/Three/Graph/Graph";
+import { ControlsTip } from "@/components/ControlsTip/ControlsTip";
 
 export default async function SearchLayout({
   params,
@@ -20,9 +22,17 @@ export default async function SearchLayout({
   const graphData = await fetchGraphDataWithSimulation();
 
   return (
-    <div className="isolate flex flex-col gap-28 pb-32">
-      <HeroSection dictionary={t} graphData={graphData} />
-      <div className="">{children}</div>
+    <div className="isolate flex flex-col gap-28">
+      <section className="-z-10 fixed top-0 left-0 flex flex-col w-full">
+        <Graph data={graphData} />
+      </section>
+      <section className={cn("flex flex-col pointer-events-none")}>
+        <div className="pack-content pointer-events-auto">
+          <SearchBar />
+          <ControlsTip />
+        </div>
+        {children}
+      </section>
     </div>
   );
 }

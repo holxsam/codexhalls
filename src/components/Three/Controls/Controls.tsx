@@ -1,61 +1,81 @@
 import * as THREE from "three";
-import { useThree } from "@react-three/fiber";
+import { useFrame, useThree } from "@react-three/fiber";
 import { useSpring, SpringConfig } from "@react-spring/three";
 import { useGesture } from "@use-gesture/react";
-import { ReactNode, useEffect, useMemo, useRef } from "react";
+import { ReactNode, RefObject, useEffect, useMemo, useRef } from "react";
 import { Vector3Array } from "@/utils/types";
+import { clamp } from "three/src/math/MathUtils.js";
 
 // we reuse these in our animation loop:
 const xVector = new THREE.Vector3(1, 0, 0).normalize();
 const yVector = new THREE.Vector3(0, 1, 0).normalize();
 const quaternionX = new THREE.Quaternion();
 const quaternionY = new THREE.Quaternion();
-const o = new THREE.Object3D();
+const obj = new THREE.Object3D();
 
 export type ControlsProps = {
+  children?: ReactNode;
   global?: boolean;
   cursor?: boolean;
-  // zoom?: number;
+  position?: Vector3Array;
   rotation?: Vector3Array;
+  scale?: number;
   config?: SpringConfig;
   enabled?: boolean;
-  children?: ReactNode;
   domElement?: HTMLElement;
-  enableMobileControls?: boolean;
+  enableTouchControls?: boolean;
+  showHelper?: boolean; // use this to get a good initial position/rotation for your data
+  showAxes?: boolean;
+  step?: number;
+  minZoom?: number;
+  maxZoom?: number;
 };
 
 export const Controls = ({
+  children,
   enabled = true,
   global = true,
   domElement,
   cursor = false,
-  children,
+  position = [0, 0, 10],
   rotation = [0, 0, 0],
-  // zoom = 1,
+  scale = 1,
   config = { mass: 1, tension: 170, friction: 26 },
-  enableMobileControls = true,
+  enableTouchControls = true,
+  showHelper = false,
+  showAxes = false,
+  step = 0.1,
+  minZoom = 0.1,
+  maxZoom = 10,
 }: ControlsProps) => {
   const groupRef = useRef<THREE.Group>(null!);
-  const camera = useThree((state) => state.camera);
   const gl = useThree((state) => state.gl);
   const explDomElement = domElement || gl.domElement;
 
-  // we only want to do this once (when the component first mounts)
-  // so ignore the react-hooks/exhaustive-deps warning for 'rotation'
-  const initialQuaternion = useMemo(
-    () =>
-      new THREE.Quaternion()
-        .setFromEuler(new THREE.Euler(...rotation), false)
-        .toArray(),
-    []
-  );
+  const { initialPosition, initialQuaternion, initialScale, o } =
+    useMemo(() => {
+      obj.position.set(...position);
+      obj.rotation.set(...rotation);
+      obj.scale.setScalar(scale);
+
+      const [x, y, z, w] = obj.quaternion.toArray();
+
+      return {
+        initialQuaternion: [x, y, z, w],
+        initialPosition: obj.position.toArray(),
+        initialScale: scale,
+        o: obj,
+      };
+    }, [position, rotation, scale]);
 
   // we only want to do this once (when the component first mounts)
   // so ignore the react-hooks/exhaustive-deps warning for 'rotation'
   useEffect(() => {
-    // set the initial rotation:
-    groupRef.current.rotation.set(...rotation);
-    o.rotation.set(...rotation);
+    // set the initial spatial features:
+    const group = groupRef.current;
+    group.position.copy(o.position);
+    group.quaternion.copy(o.quaternion);
+    group.scale.copy(o.scale);
   }, []);
 
   useEffect(() => {
@@ -70,20 +90,38 @@ export const Controls = ({
   }, [gl, global, cursor, explDomElement, enabled]);
 
   useEffect(() => {
-    gl.domElement.style.touchAction = enableMobileControls ? "none" : "auto";
-  }, [enableMobileControls, gl]);
+    gl.domElement.style.touchAction = enableTouchControls ? "none" : "auto";
+  }, [enableTouchControls, gl]);
 
-  const [spring, api] = useSpring(() => ({
+  const [, anim] = useSpring(() => ({
     quaternion: initialQuaternion,
+    position: initialPosition,
+    scale: initialScale,
     config,
+    onChange: (result) => {
+      const scale = result.value.scale;
+      const [px, py, pz] = result.value.position;
+      const [x, y, z, w] = result.value.quaternion;
+
+      groupRef.current.position.set(px, py, pz);
+      groupRef.current.scale.setScalar(scale);
+      groupRef.current.quaternion.set(x, y, z, w);
+    },
   }));
 
   const bind = useGesture(
     {
+      // enable: false,
       onWheel: ({ direction: [_, y], active, shiftKey }) => {
         // ZOOM:
         if (active && shiftKey) {
-          camera.position.z += y * 10;
+          const newZoom = o.scale.x - step * y;
+          const zoom = clamp(newZoom, minZoom, maxZoom);
+          o.scale.set(zoom, zoom, zoom);
+
+          anim.start({
+            scale: o.scale.x,
+          });
         }
       },
       onHover: ({ last }) => {
@@ -109,6 +147,7 @@ export const Controls = ({
             group: {
               x: groupRef.current.position.x,
               y: groupRef.current.position.y,
+              z: groupRef.current.position.z,
             },
           };
         }
@@ -121,15 +160,19 @@ export const Controls = ({
         const auxButton = buttons === 4; // usually the middle or scroll click
         const shiftClick = primaryButton && shiftKey;
 
-        if (isTouch && !enableMobileControls) return memo;
+        if (isTouch && !enableTouchControls) return memo;
 
         // PAN:
         if ((shiftClick && touches === 1) || secondaryButton || auxButton) {
           const ox = memo.group.x;
           const oy = memo.group.y;
 
-          groupRef.current.position.x = ox + mx / 10;
-          groupRef.current.position.y = oy - my / 10;
+          o.position.x = ox + mx / 10;
+          o.position.y = oy - my / 10;
+
+          anim.start({
+            position: o.position.toArray(),
+          });
 
           return memo;
         }
@@ -139,22 +182,18 @@ export const Controls = ({
           // We use quaternions to rotate as opposed to euler angles.
           // ex: groupRef.current.rotation.x += dy // eular angle bad; causes gimble lock
           // Explanation/inspiration for the solution: https://www.youtube.com/watch?v=9dbt28PAzmo
+
+          // 'o' is temporary object
+          // we apply all the quaternions to it to get the correct rotation
           quaternionX.setFromAxisAngle(xVector, dy / 250);
           o.applyQuaternion(quaternionX);
 
           quaternionY.setFromAxisAngle(yVector, dx / 250);
           o.applyQuaternion(quaternionY);
 
-          // 'o' is temporary object
-          // we apply all the quaternions to it to get the correct rotation
           // then we animate the values with useSpring's imperative api
-          api.start({
+          anim.start({
             quaternion: o.quaternion.toArray(),
-            onChange: (result) => {
-              const [x, y, z, w] = result.value.quaternion;
-              groupRef.current.quaternion.set(x, y, z, w); // this is where the values are applied
-            },
-            config,
           });
         }
         return memo;
@@ -162,6 +201,7 @@ export const Controls = ({
       onPinch: ({
         da: [d, a], // [d,a] absolute [d]istance and [a]ngle of the two pointers
         origin: [cpx, cpy], // coordinates of the center between the two touch event
+        offset: [scale], // [scale, angle] offsets (starts withs scale=1)
         active,
         first,
         memo,
@@ -176,8 +216,8 @@ export const Controls = ({
             group: {
               x: groupRef.current.position.x,
               y: groupRef.current.position.y,
+              z: groupRef.current.position.z,
             },
-            camera: { z: camera.position.z },
             cpx,
             cpy,
             d,
@@ -185,31 +225,34 @@ export const Controls = ({
           };
         }
 
-        if (!isPointerEvent(event)) return memo;
-
+        // if (!isPointerEvent(event)) return memo;
         // const isTouch = event.pointerType === "touch";
         // if (isTouch && !enableMobileControls) return memo;
 
-        if (enableMobileControls && active && touches === 2) {
+        if (enableTouchControls && active && touches === 2) {
           const ox = memo.group.x;
           const oy = memo.group.y;
 
           const dcpx = cpx - memo.cpx;
           const dcpy = cpy - memo.cpy;
 
-          // PAN:
-          groupRef.current.position.x = ox + dcpx / 5;
-          groupRef.current.position.y = oy - dcpy / 5;
+          const zoom = clamp(scale, minZoom, maxZoom);
 
-          // ZOOM:
-          const dd = d - memo.d;
-          camera.position.z = memo.camera.z - dd / 5;
+          o.position.x = ox + dcpx / 5; // pan x
+          o.position.y = oy - dcpy / 5; // pan y
+          o.scale.set(zoom, zoom, zoom);
+
+          anim.start({
+            position: o.position.toArray(),
+            scale: o.scale.x,
+          });
         }
 
         return memo;
       },
     },
     {
+      enabled,
       target: global ? explDomElement : undefined,
       drag: {
         pointer: { buttons: [1, 2, 4] }, // https://developer.mozilla.org/en-US/docs/Web/API/MouseEvent/buttons
@@ -221,7 +264,8 @@ export const Controls = ({
     // @ts-ignore: this is an issue with react-three-fiber type definitions
     <group ref={groupRef} {...bind?.()}>
       {children}
-      {/* <axesHelper args={[60]} /> */}
+      {showAxes && <axesHelper args={[60]} />}
+      {showHelper && <SpatialHelper objectRef={groupRef} />}
     </group>
   );
 };
@@ -230,4 +274,52 @@ const isPointerEvent = (
   event: PointerEvent | MouseEvent | TouchEvent | KeyboardEvent
 ): event is PointerEvent => {
   return event.type.includes("pointer");
+};
+
+const SpatialHelper = ({
+  objectRef,
+}: {
+  objectRef: RefObject<THREE.Group>;
+}) => {
+  const ref = useRef<HTMLPreElement>(null!);
+
+  useEffect(() => {
+    // rendering outside of react because idk how to render pure html inside react-three-fiber
+    const container = document.createElement("div");
+    container.className =
+      "fixed bottom-0 right-0 text-sm w-56 pointer-events-none";
+
+    const pre = document.createElement("pre");
+    ref.current = pre;
+
+    const btn = document.createElement("button");
+    btn.type = "button";
+    btn.textContent = "copy";
+    btn.className =
+      "absolute right-0 bottom-0 m-px px-3 py-1 bg-zinc-400 text-zinc-700 uppercase font-bold text-sm rounded-md pointer-events-auto ";
+    btn.onclick = () => {
+      navigator.clipboard.writeText(pre.textContent ?? "");
+    };
+
+    container.appendChild(pre);
+    container.appendChild(btn);
+    document.body.appendChild(container);
+
+    return () => {
+      document.body.removeChild(container);
+    };
+  }, []);
+
+  useFrame(() => {
+    if (!objectRef.current || !ref.current) return;
+    const [px, py, pz] = objectRef.current.position;
+    const [rx, ry, rz] = objectRef.current.rotation;
+    const scale = objectRef.current.scale.x;
+
+    const data = { position: [px, py, pz], rotation: [rx, ry, rz], scale };
+
+    ref.current.textContent = JSON.stringify(data, null, 2);
+  });
+
+  return <></>;
 };

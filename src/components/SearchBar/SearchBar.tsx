@@ -1,0 +1,120 @@
+"use client";
+import { useGraphStore } from "@/store/GraphStore";
+import { cn } from "@/utils/utils";
+import {
+  IconAccessPoint,
+  IconAccessPointOff,
+  IconAtom,
+  IconAtom2,
+  IconAtomOff,
+  IconBinaryTree2,
+  IconSearch,
+  IconSettings,
+  IconSphere,
+  IconX,
+} from "@tabler/icons-react";
+import { useEffect, useRef, useState } from "react";
+
+export function SearchBar() {
+  const inputRef = useRef<HTMLInputElement>(null!);
+  const [inputFilterValue, setInputFilterValue] = useState("");
+
+  const resetQueryFilter = () => {
+    // if (typeof inputRef === "function") return;
+    // setUrlQuery({ filterValue: "" });
+    setInputFilterValue("");
+    inputRef.current.focus();
+  };
+
+  useEffect(() => {
+    const handler = (e: KeyboardEvent) => {
+      if (e.ctrlKey && e.key === "q") {
+        inputRef.current.focus();
+      }
+    };
+    window.addEventListener("keydown", handler);
+    return () => {
+      window.removeEventListener("keydown", handler);
+    };
+  }, []);
+
+  return (
+    <div className="flex flex-colzz gap-1">
+      <div className="group relative flex min-h-[3rem] w-full rounded-lg text-base caret-white backdrop-blur-md bg-zinc-800/90 focus-within:bg-zinc-700/70 focus-within:ring-1zz ring-white/10 ring-inset">
+        <button
+          type="button"
+          className="grid place-items-center pl-3 pr-2 rounded-tl-lg rounded-bl-lg outline-none appearance-none focus-visible:ring-1 ring-white ring-inset text-zinc-500 bg-transparent"
+          onClick={resetQueryFilter}
+        >
+          {inputFilterValue === "" ? <IconSearch /> : <IconX />}
+        </button>
+        <input
+          type="text"
+          ref={inputRef}
+          spellCheck={false}
+          autoComplete="off"
+          placeholder={""}
+          className={cn(
+            "outline-none appearance-none",
+            "flex w-full text-base caret-white bg-transparent pr-2 rounded-tr-lg rounded-br-lg",
+            "placeholder:text-neutral-600"
+          )}
+          value={inputFilterValue}
+          onChange={(e) => {
+            setInputFilterValue(e.target.value);
+            // debouncedUpdateUrl(e.target.value);
+          }}
+          // onBlur={unfocusItemLinks}
+          // onKeyDown={arrowKeyNav}
+        />
+      </div>
+
+      {/* <div className="relative z-10 flex">
+        <ModeButton />
+        <MobileControlsButton />
+      
+      </div> */}
+    </div>
+  );
+}
+
+const ModeButton = () => {
+  const toggleMode = useGraphStore((state) => state.toggleMode);
+  const mode = useGraphStore((state) => state.mode);
+
+  return (
+    <button
+      type="button"
+      className="grid place-items-center h-full w-8 rounded-tl-lg rounded-bl-lg outline-none bg-transparent appearance-none focus-visible:ring-1 ring-white ring-inset text-zinc-700 hover:text-zinc-500"
+      onClick={toggleMode}
+    >
+      {/* {mode} */}
+
+      {mode === "tree" ? <IconBinaryTree2 /> : <IconSphere />}
+    </button>
+  );
+};
+
+const MobileControlsButton = () => {
+  const enableMobile = useGraphStore((state) => state.touchControls);
+  const setMobile = useGraphStore((state) => state.setTouchControls);
+
+  const toggleTouchControls = () => setMobile(!enableMobile);
+
+  return (
+    <button
+      type="button"
+      className="grid place-items-center h-full w-8 rounded-tl-lg rounded-bl-lg outline-none bg-transparent appearance-none focus-visible:ring-1 ring-white ring-inset text-zinc-700 hover:text-zinc-500"
+      onClick={toggleTouchControls}
+    >
+      {enableMobile ? <IconAccessPoint /> : <IconAccessPointOff />}
+    </button>
+    // <button
+    //   type="button"
+    //   className="rounded-md bg-indigo-500 uppercase font-medium w-24 h-10"
+    //   onPointerDown={toggleTouchControls}
+    // >
+
+    // </button>
+  );
+};
