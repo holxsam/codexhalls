@@ -2,8 +2,8 @@
 
 import { useGraphStore } from "@/store/GraphStore";
 import {
-  IconAccessPoint,
-  IconAccessPointOff,
+  IconArrowsMaximize,
+  IconArrowsMinimize,
   IconBinaryTree2,
   IconHandFinger,
   IconHandFingerOff,
@@ -17,10 +17,11 @@ export function GraphModeToggle() {
   return (
     <button
       type="button"
-      className="grid place-items-center h-full w-8 rounded-tl-lg rounded-bl-lg outline-none bg-transparent appearance-none focus-visible:ring-1 ring-white ring-inset text-zinc-700 hover:text-zinc-500"
+      className="flex items-center justify-center gap-1 whitespace-nowrap h-full outline-none bg-transparent appearance-none font-bold capitalize text-sm focus-visible:ring-1 ring-white ring-inset text-zinc-500 hover:text-zinc-50"
       onClick={toggleMode}
     >
       {mode === "tree" ? <IconBinaryTree2 /> : <IconSphere />}
+      {mode === "tree" ? "tree" : "sphere"}
     </button>
   );
 }
@@ -34,10 +35,27 @@ export function TouchControlsToggle() {
   return (
     <button
       type="button"
-      className="grid place-items-center h-full w-8 rounded-tl-lg rounded-bl-lg outline-none bg-transparent appearance-none focus-visible:ring-1 ring-white ring-inset text-zinc-700 hover:text-zinc-500"
+      className="flex items-center justify-center gap-1 whitespace-nowrap h-full outline-none bg-transparent appearance-none font-bold capitalize text-sm focus-visible:ring-1 ring-white ring-inset text-zinc-500 hover:text-zinc-50"
       onClick={toggleTouchControls}
     >
       {enableMobile ? <IconHandFinger /> : <IconHandFingerOff />}
+      {enableMobile ? "touch on" : "touch off"}
+    </button>
+  );
+}
+
+export function FullscreenToggle() {
+  const fullscreen = useGraphStore((state) => state.fullscreen);
+  const toggleFullscreen = useGraphStore((state) => state.toggleFullscreen);
+
+  return (
+    <button
+      type="button"
+      className="flex items-center justify-center gap-1 whitespace-nowrap h-full outline-none bg-transparent appearance-none font-bold capitalize text-sm focus-visible:ring-1 ring-white ring-inset text-zinc-500 hover:text-zinc-50"
+      onClick={toggleFullscreen}
+    >
+      {fullscreen ? <IconArrowsMinimize /> : <IconArrowsMaximize />}
+      {fullscreen ? "minimize" : "fullscreen"}
     </button>
   );
 }

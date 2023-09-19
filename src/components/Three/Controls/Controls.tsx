@@ -5,13 +5,19 @@ import { useGesture } from "@use-gesture/react";
 import { ReactNode, RefObject, useEffect, useMemo, useRef } from "react";
 import { Vector3Array } from "@/utils/types";
 import { clamp } from "three/src/math/MathUtils.js";
+import { useKeyboardDebug } from "@/hooks/useKeyboardDebug";
+import { useGraphStore } from "@/store/GraphStore";
 
 // we reuse these in our animation loop:
 const xVector = new THREE.Vector3(1, 0, 0).normalize();
 const yVector = new THREE.Vector3(0, 1, 0).normalize();
 const quaternionX = new THREE.Quaternion();
 const quaternionY = new THREE.Quaternion();
-const obj = new THREE.Object3D();
+// const obj = new THREE.Object3D();
+const o = new THREE.Object3D();
+
+const vec = new THREE.Vector3(); // create once and reuse
+const pos = new THREE.Vector3(); // create once and reuse
 
 export type ControlsProps = {
   children?: ReactNode;
@@ -50,23 +56,26 @@ export const Controls = ({
 }: ControlsProps) => {
   const groupRef = useRef<THREE.Group>(null!);
   const gl = useThree((state) => state.gl);
+  const camera = useThree((state) => state.camera);
   const explDomElement = domElement || gl.domElement;
 
-  const { initialPosition, initialQuaternion, initialScale, o } =
-    useMemo(() => {
-      obj.position.set(...position);
-      obj.rotation.set(...rotation);
-      obj.scale.setScalar(scale);
+  const setGraphPosition = useGraphStore((state) => state.setGraphPosition);
 
-      const [x, y, z, w] = obj.quaternion.toArray();
+  // const { initialPosition, initialQuaternion, initialScale, o } =
+  //   useMemo(() => {
+  //     obj.position.set(...position);
+  //     obj.rotation.set(...rotation);
+  //     obj.scale.setScalar(scale);
 
-      return {
-        initialQuaternion: [x, y, z, w],
-        initialPosition: obj.position.toArray(),
-        initialScale: scale,
-        o: obj,
-      };
-    }, [position, rotation, scale]);
+  //     const [x, y, z, w] = obj.quaternion.toArray();
+
+  //     return {
+  //       initialQuaternion: [x, y, z, w],
+  //       initialPosition: obj.position.toArray(),
+  //       initialScale: scale,
+  //       o: obj,
+  //     };
+  //   }, [position, rotation, scale]);
 
   // we only want to do this once (when the component first mounts)
   // so ignore the react-hooks/exhaustive-deps warning for 'rotation'
@@ -93,21 +102,78 @@ export const Controls = ({
     gl.domElement.style.touchAction = enableTouchControls ? "none" : "auto";
   }, [enableTouchControls, gl]);
 
-  const [, anim] = useSpring(() => ({
-    quaternion: initialQuaternion,
-    position: initialPosition,
-    scale: initialScale,
-    config,
-    onChange: (result) => {
-      const scale = result.value.scale;
-      const [px, py, pz] = result.value.position;
-      const [x, y, z, w] = result.value.quaternion;
+  useKeyboardDebug("d", () => {
+    const x = 350;
+    const y = 200;
 
-      groupRef.current.position.set(px, py, pz);
-      groupRef.current.scale.setScalar(scale);
-      groupRef.current.quaternion.set(x, y, z, w);
-    },
-  }));
+    vec.set(
+      (x / window.innerWidth) * 2 - 1,
+      -(y / window.innerHeight) * 2 + 1,
+      0.5
+    );
+
+    console.log(vec.toArray());
+
+    vec.unproject(camera);
+
+    console.log(vec.toArray());
+
+    vec.sub(camera.position).normalize();
+
+    const distance = -camera.position.z / vec.z;
+
+    pos.copy(camera.position).add(vec.multiplyScalar(distance));
+
+    // o.position.set(pos.x, pos.y, 0);
+
+    // anim.start({ position: o.position.toArray() });
+
+    setGraphPosition([pos.x, pos.y, 0]);
+  });
+
+  useEffect(() => {
+    console.log("UE: position");
+    o.position.set(...position);
+    anim.start({
+      position: o.position.toArray(),
+    });
+  }, [position]);
+
+  useEffect(() => {
+    console.log("UE: rotation");
+    o.rotation.set(...rotation);
+    const [x, y, z, w] = o.quaternion.toArray();
+    anim.start({
+      quaternion: [x, y, z, w],
+    });
+  }, [rotation]);
+
+  useEffect(() => {
+    console.log("UE: scale");
+    o.scale.setScalar(scale);
+    anim.start({
+      scale: o.scale.x,
+    });
+  }, [scale]);
+
+  const [, anim] = useSpring(() => {
+    console.log("usespring");
+    return {
+      quaternion: [0, 0, 0, 1],
+      position: [0, 0, 0],
+      scale: 1,
+      config,
+      onChange: (result) => {
+        const scale = result.value.scale;
+        const [px, py, pz] = result.value.position;
+        const [x, y, z, w] = result.value.quaternion;
+
+        groupRef.current.position.set(px, py, pz);
+        groupRef.current.scale.setScalar(scale);
+        groupRef.current.quaternion.set(x, y, z, w);
+      },
+    };
+  });
 
   const bind = useGesture(
     {

@@ -48,11 +48,18 @@ export type GraphState = {
   animating: boolean;
   mode: "sphere" | "tree";
   touchControls: boolean;
+  fullscreen: boolean;
+
+  minimizedPosition: [x: number, y: number];
 
   // useful data structures based of the nodes and edges:
   connections: NodeConnectionsMap;
   instanceIdToNodeId: InstanceToNodeIdMap;
   nodeIdToInstanceId: NodeToInstanceIdMap;
+
+  // threejs
+  graphPosition: Vector3Array;
+  graphScale: number;
 };
 
 export type GraphAction = {
@@ -65,6 +72,13 @@ export type GraphAction = {
   toggleMode: () => void;
   setTouchControls: (value: boolean) => void;
   toggleTouchControls: () => void;
+  setFullscreen: (value: boolean) => void;
+  toggleFullscreen: () => void;
+
+  setMinimizedPosition: (pos: [x: number, y: number]) => void;
+
+  setGraphPosition: (pos: Vector3Array) => void;
+  setGraphScale: (scale: number) => void;
 };
 
 export const useGraphStore = create<GraphState & GraphAction>()((set) => ({
@@ -81,10 +95,16 @@ export const useGraphStore = create<GraphState & GraphAction>()((set) => ({
   animating: false,
   mode: "sphere",
   touchControls: true, // needs to be false in production by default
+  fullscreen: true,
+
+  minimizedPosition: [0, 0],
 
   connections: {},
   instanceIdToNodeId: {},
   nodeIdToInstanceId: {},
+
+  graphPosition: [0, -60, 0],
+  graphScale: 1.3,
 
   // actions:
   initGraph: (data) => {
@@ -123,4 +143,9 @@ export const useGraphStore = create<GraphState & GraphAction>()((set) => ({
   setTouchControls: (v) => set(() => ({ touchControls: v })),
   toggleTouchControls: () =>
     set((state) => ({ touchControls: !state.touchControls })),
+  setFullscreen: (value) => set(() => ({ fullscreen: value })),
+  toggleFullscreen: () => set((state) => ({ fullscreen: !state.fullscreen })),
+  setMinimizedPosition: (pos) => set(() => ({ minimizedPosition: pos })),
+  setGraphPosition: (pos) => set(() => ({ graphPosition: pos })),
+  setGraphScale: (scale) => set(() => ({ graphScale: scale })),
 }));

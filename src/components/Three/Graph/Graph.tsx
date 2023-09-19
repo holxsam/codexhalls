@@ -6,7 +6,6 @@ import { GraphData, useGraphStore } from "@/store/GraphStore";
 import { Lights } from "../Lights/Lights";
 import { Helpers } from "../Helpers/Helpers";
 import { DISTANCE_FROM_ORIGIN } from "@/utils/constants";
-import { motion, useScroll, useTransform } from "framer-motion";
 import { useEffect } from "react";
 import { VisualDebug } from "../../VisualDebug/VisualDebug";
 import { GraphSceneAndControls } from "../GraphSceneAndControls/GraphSceneAndControls";
@@ -15,6 +14,11 @@ import { memo } from "react";
 
 THREE.ColorManagement.enabled = true;
 
+// const cameraPosition = new THREE.Vector3().setFromSphericalCoords(
+//   DISTANCE_FROM_ORIGIN / 4,
+//   Math.PI / 2,
+//   0
+// );
 const cameraPosition = new THREE.Vector3().setFromSphericalCoords(
   DISTANCE_FROM_ORIGIN / 4,
   Math.PI / 2,
@@ -24,11 +28,8 @@ const cameraPosition = new THREE.Vector3().setFromSphericalCoords(
 export function Graph({ data }: { data: GraphData }) {
   const initGraph = useGraphStore((state) => state.initGraph);
   const toggleMode = useGraphStore((state) => state.toggleMode);
-
-  // const { scrollY } = useScroll({});
-  // const { scrollY } = useScroll();
-  // const y = useTransform(scrollY, [0, 600], ["0%", "50%"]);
-  // const opacity = useTransform(scrollY, [0, 800], [1, 0]);
+  // const setCamera = useGraphStore((state) => state.setCamera);
+  // const camera = useGraphStore((state) => state.camera);
 
   useEffect(() => {
     const toggleGraphMode = (e: KeyboardEvent) => {
@@ -51,15 +52,14 @@ export function Graph({ data }: { data: GraphData }) {
   // However, that is NOT the case, even tho its supposed to be cached by the layout.
   // Most likely a next 13 bug.
   useEffect(() => {
+    // { fov: 75, near: 0.1, far: 1000, position: [0, 0, 5] }
+    // setCamera(new THREE.PerspectiveCamera(40,undefined, 0.1, 1000));
+
     initGraph(data);
   }, []);
 
   return (
-    <motion.div
-      // style={{
-      //   y,
-      //   opacity,
-      // }}
+    <div
       className="relative w-full h-screen-dvh"
       onContextMenu={(e) => {
         e.preventDefault();
@@ -68,7 +68,11 @@ export function Graph({ data }: { data: GraphData }) {
       <SceneOverlay>
         <VisualDebug />
       </SceneOverlay>
-      <Canvas camera={{ position: cameraPosition, fov: 40 }}>
+      <Canvas
+        camera={{ position: cameraPosition, fov: 40 }}
+
+        // camera={camera}
+      >
         <Lights />
         <GraphSceneAndControls />
         <Helpers
@@ -77,6 +81,6 @@ export function Graph({ data }: { data: GraphData }) {
         // gizmo
         />
       </Canvas>
-    </motion.div>
+    </div>
   );
 }

@@ -113,7 +113,7 @@ const config: Config = {
     plugin(function ({ addUtilities }) {
       addUtilities({
         ".pack-content": {
-          "@apply mx-auto max-w-7xl px-4 w-full": {},
+          "@apply mx-auto max-w-5xl px-4 w-full": {},
         },
         ".fullscreen-pack-content": {
           "@apply mx-auto px-4 w-full": {},

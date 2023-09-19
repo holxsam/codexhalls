@@ -1,6 +1,6 @@
 export default function DatabasePage() {
   return (
-    <div className="pack-content flex flex-col gap-8 bg-zinc-900/90 backdrop-blur-mdzz pointer-events-none [&>*]:pointer-events-auto">
+    <div className="flex flex-col gap-8">
       <h1 className="text-7xl uppercase font-bold">Database Page</h1>
       <p>
         Lorem ipsum dolor sit amet consectetur, adipisicing elit. Magni dolore

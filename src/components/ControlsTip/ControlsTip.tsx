@@ -1,16 +1,11 @@
 import { IconHandMove, IconHandTwoFingers } from "@tabler/icons-react";
 import { ReactNode } from "react";
-import { GraphModeToggle, TouchControlsToggle } from "./GraphToggles";
 
 export function ControlsTip() {
   return (
-    <div className="flex justify-between mt-2">
+    <div className="flex justify-between pointer-events-auto">
       <DesktopControlTips />
       <TouchControlTips />
-      <div className="flex">
-        <TouchControlsToggle />
-        <GraphModeToggle />
-      </div>
     </div>
   );
 }

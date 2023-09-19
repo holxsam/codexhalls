@@ -39,7 +39,7 @@ export function SearchBar() {
   }, []);
 
   return (
-    <div className="flex flex-colzz gap-1">
+    <div className="flex gap-1 pointer-events-auto">
       <div className="group relative flex min-h-[3rem] w-full rounded-lg text-base caret-white backdrop-blur-md bg-zinc-800/90 focus-within:bg-zinc-700/70 focus-within:ring-1zz ring-white/10 ring-inset">
         <button
           type="button"
@@ -68,53 +68,6 @@ export function SearchBar() {
           // onKeyDown={arrowKeyNav}
         />
       </div>
-
-      {/* <div className="relative z-10 flex">
-        <ModeButton />
-        <MobileControlsButton />
-      
-      </div> */}
     </div>
   );
 }
-
-const ModeButton = () => {
-  const toggleMode = useGraphStore((state) => state.toggleMode);
-  const mode = useGraphStore((state) => state.mode);
-
-  return (
-    <button
-      type="button"
-      className="grid place-items-center h-full w-8 rounded-tl-lg rounded-bl-lg outline-none bg-transparent appearance-none focus-visible:ring-1 ring-white ring-inset text-zinc-700 hover:text-zinc-500"
-      onClick={toggleMode}
-    >
-      {/* {mode} */}
-
-      {mode === "tree" ? <IconBinaryTree2 /> : <IconSphere />}
-    </button>
-  );
-};
-
-const MobileControlsButton = () => {
-  const enableMobile = useGraphStore((state) => state.touchControls);
-  const setMobile = useGraphStore((state) => state.setTouchControls);
-
-  const toggleTouchControls = () => setMobile(!enableMobile);
-
-  return (
-    <button
-      type="button"
-      className="grid place-items-center h-full w-8 rounded-tl-lg rounded-bl-lg outline-none bg-transparent appearance-none focus-visible:ring-1 ring-white ring-inset text-zinc-700 hover:text-zinc-500"
-      onClick={toggleTouchControls}
-    >
-      {enableMobile ? <IconAccessPoint /> : <IconAccessPointOff />}
-    </button>
-    // <button
-    //   type="button"
-    //   className="rounded-md bg-indigo-500 uppercase font-medium w-24 h-10"
-    //   onPointerDown={toggleTouchControls}
-    // >
-
-    // </button>
-  );
-};

@@ -1,8 +1,9 @@
-import { Object3D, Color } from "three";
+import * as THREE from "three";
+import { Object3D, Color, IcosahedronGeometry } from "three";
 import { Vector3Array } from "@/utils/types";
 import { isRefObject } from "@/utils/utils";
 import { forwardRef, useMemo, useLayoutEffect } from "react";
-import { InstancedMeshProps, useFrame } from "@react-three/fiber";
+import { InstancedMeshProps, extend, useFrame } from "@react-three/fiber";
 import { useGraphStore } from "@/store/GraphStore";
 
 const o = new Object3D(); // reusable object3D
@@ -16,6 +17,9 @@ type BoxesProps = {
   rotations: Vector3Array[];
   colors: Vector3Array[];
 };
+
+class icosahedronGeometry extends IcosahedronGeometry {}
+extend({ icosahedronGeometry });
 
 export const InstancedNodes = forwardRef<THREE.InstancedMesh, BoxesProps>(
   function InstancedNodes(
@@ -133,7 +137,7 @@ export const InstancedNodes = forwardRef<THREE.InstancedMesh, BoxesProps>(
         onPointerOut={onPointerOut}
         onClick={onClick}
       >
-        <boxGeometry>
+        <icosahedronGeometry>
           <instancedBufferAttribute
             attach="attributes-color"
             array={COLORS}
@@ -141,7 +145,16 @@ export const InstancedNodes = forwardRef<THREE.InstancedMesh, BoxesProps>(
             itemSize={3}
             normalized
           />
-        </boxGeometry>
+        </icosahedronGeometry>
+        {/* <boxGeometry>
+          <instancedBufferAttribute
+            attach="attributes-color"
+            array={COLORS}
+            count={COLORS.length / 3}
+            itemSize={3}
+            normalized
+          />
+        </boxGeometry> */}
         {/* <meshStandardMaterial /> */}
         <meshPhongMaterial shininess={100} />
       </instancedMesh>

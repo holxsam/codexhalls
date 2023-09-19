@@ -10,6 +10,7 @@ import { ReactNode, cache } from "react";
 import { SearchBar } from "@/components/SearchBar/SearchBar";
 import { Graph } from "@/components/Three/Graph/Graph";
 import { ControlsTip } from "@/components/ControlsTip/ControlsTip";
+import { Sidebar } from "@/components/Sidebar/Sidebar";
 
 export default async function SearchLayout({
   params,
@@ -22,22 +23,19 @@ export default async function SearchLayout({
   const graphData = await fetchGraphDataWithSimulation();
 
   return (
-    <div className="isolate flex flex-col gap-28">
+    <>
       <section className="-z-10 fixed top-0 left-0 flex flex-col w-full">
         <Graph data={graphData} />
       </section>
-      <section className={cn("flex flex-col pointer-events-none")}>
-        <div className="pack-content pointer-events-auto">
-          <SearchBar />
-          <ControlsTip />
-        </div>
+      <div className="flex flex-col sm:flex-row gap-4 w-full pack-content pointer-events-none">
+        <Sidebar />
         {children}
-      </section>
-    </div>
+      </div>
+    </>
   );
 }
 
-const fetchGraphDataWithSimulation = async (): Promise<GraphData> => {
+const fetchGraphDataWithSimulation = cache(async (): Promise<GraphData> => {
   // large data to test for performance:
   // const data = getLargeData();
 
@@ -50,7 +48,7 @@ const fetchGraphDataWithSimulation = async (): Promise<GraphData> => {
   simulateForces(data);
 
   return data;
-};
+});
 
 const physicsSettings = {
   // timeStep: 0.5,
