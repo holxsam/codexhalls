@@ -4,7 +4,7 @@ import { Popover } from "@headlessui/react";
 import { IconMenu, IconX } from "@tabler/icons-react";
 import { cn } from "@/utils/utils";
 
-export const NavMenuButton = () => {
+export const NavbarMenuButton = () => {
   return (
     <Popover.Button
       title="Navigation Menu"

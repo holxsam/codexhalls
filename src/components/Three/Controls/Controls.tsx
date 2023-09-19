@@ -102,37 +102,7 @@ export const Controls = ({
     gl.domElement.style.touchAction = enableTouchControls ? "none" : "auto";
   }, [enableTouchControls, gl]);
 
-  useKeyboardDebug("d", () => {
-    const x = 350;
-    const y = 200;
-
-    vec.set(
-      (x / window.innerWidth) * 2 - 1,
-      -(y / window.innerHeight) * 2 + 1,
-      0.5
-    );
-
-    console.log(vec.toArray());
-
-    vec.unproject(camera);
-
-    console.log(vec.toArray());
-
-    vec.sub(camera.position).normalize();
-
-    const distance = -camera.position.z / vec.z;
-
-    pos.copy(camera.position).add(vec.multiplyScalar(distance));
-
-    // o.position.set(pos.x, pos.y, 0);
-
-    // anim.start({ position: o.position.toArray() });
-
-    setGraphPosition([pos.x, pos.y, 0]);
-  });
-
   useEffect(() => {
-    console.log("UE: position");
     o.position.set(...position);
     anim.start({
       position: o.position.toArray(),
@@ -140,7 +110,6 @@ export const Controls = ({
   }, [position]);
 
   useEffect(() => {
-    console.log("UE: rotation");
     o.rotation.set(...rotation);
     const [x, y, z, w] = o.quaternion.toArray();
     anim.start({
@@ -149,7 +118,6 @@ export const Controls = ({
   }, [rotation]);
 
   useEffect(() => {
-    console.log("UE: scale");
     o.scale.setScalar(scale);
     anim.start({
       scale: o.scale.x,
@@ -157,7 +125,6 @@ export const Controls = ({
   }, [scale]);
 
   const [, anim] = useSpring(() => {
-    console.log("usespring");
     return {
       quaternion: [0, 0, 0, 1],
       position: [0, 0, 0],

@@ -15,7 +15,7 @@ import {
 } from "@tabler/icons-react";
 import { useEffect, useRef, useState } from "react";
 
-export function SearchBar() {
+export function Searchbar() {
   const inputRef = useRef<HTMLInputElement>(null!);
   const [inputFilterValue, setInputFilterValue] = useState("");
 

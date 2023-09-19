@@ -24,7 +24,6 @@ export const GraphScene = memo(function GraphScene() {
   const nodeIdMap = useGraphStore((state) => state.instanceIdToNodeId);
   const mode = useGraphStore((state) => state.mode);
 
-  const setMode = useGraphStore((state) => state.setMode);
   const setAnimating = useGraphStore((state) => state.setAnimating);
   const setHover = useGraphStore((state) => state.setNodeHoverId);
 

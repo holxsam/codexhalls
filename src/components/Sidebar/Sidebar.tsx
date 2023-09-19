@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { MinimizeTarget } from "../MinimizeTarget/MinimizeTarget";
-import { SearchBar } from "../SearchBar/SearchBar";
+import { Searchbar } from "../Searchbar/Searchbar";
 import { ControlsTip } from "../ControlsTip/ControlsTip";
 import {
   TouchControlsToggle,
@@ -12,14 +12,14 @@ export function Sidebar() {
   return (
     <aside className="sticky top-[64px] h-min sm:h-[calc(100vh-64px)] min-w-[300px] pt-4 borderzzzborder-red-500 flex flex-col gap-8">
       <div className="flex flex-col">
-        <div className="flex pointer-events-auto justify-between borderzzborder-red-500">
+        <div className="flex pointer-events-auto justify-between">
           <TouchControlsToggle />
           <GraphModeToggle />
           <FullscreenToggle />
         </div>
         <MinimizeTarget />
       </div>
-      <SearchBar />
+      <Searchbar />
       <nav className="border-l-2 border-white/[15%]">
         <ul className="[&>*]:pointer-events-auto flex flex-col gap-4 text-white/20 text-base">
           <li className="">

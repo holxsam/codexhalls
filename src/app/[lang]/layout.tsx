@@ -2,7 +2,7 @@ import "./globals.css";
 import { Metadata } from "next";
 import { JetBrains_Mono, Manrope } from "next/font/google";
 import { cn } from "@/utils/utils";
-import { NavBar } from "@/components/NavBar/NavBar";
+import { Navbar } from "@/components/Navbar/Navbar";
 import { Footer } from "@/components/Footer/Footer";
 
 // internationalization:
@@ -84,7 +84,7 @@ export default async function RootLayout({
               className="sticky data-[route-matched=true]:fixed top-0 flex flex-col w-full"
               routes={bleedRoutes}
             >
-              <NavBar />
+              <Navbar />
             </Header>
             <main className="-z-10 isolate min-h-screen">{children}</main>
             <footer className="isolate">

@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { Popover } from "@headlessui/react";
 import { Fragment } from "react";
-import { NavMenuButton } from "./NavMenuButton";
+import { NavbarMenuButton } from "./NavbarMenuButton";
 import { cn } from "@/utils/utils";
 import { useLocalelessPathname } from "@/hooks/useLocalelessPathname";
 
@@ -20,7 +20,7 @@ export const NavMenu = ({ links }: { links: NavItem[] }) => {
     <Popover as={Fragment}>
       {({ close, open }) => (
         <>
-          <NavMenuButton />
+          <NavbarMenuButton />
           <Popover.Panel
             static
             as="ul"

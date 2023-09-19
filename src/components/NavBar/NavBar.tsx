@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { NavItem, NavMenu } from "./NavMenu";
+import { NavItem, NavMenu } from "./NavbarMenu";
 import { LogoWithText } from "../Logo/Logo";
 import { cn } from "@/utils/utils";
 import { useEffect, useState } from "react";
@@ -34,7 +34,7 @@ const navLinks: NavItem[] = [
 const unScrolled = "backdrop-blur-none border-transparent bg-transparent";
 const scrolled = "backdrop-blur-lg border-white/[8%] bg-zinc-900/80";
 
-export const NavBar = () => {
+export const Navbar = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const bgColorStyles = isScrolled ? scrolled : unScrolled;
 
