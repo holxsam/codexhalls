@@ -81,13 +81,13 @@ export default async function RootLayout({
         <ReactQueryProvider>
           <DictionaryProvider value={dictionary}>
             <Header
-              className="sticky data-[route-matched=true]:fixed top-0 flex flex-col w-full"
+              className="z-10 sticky data-[route-matched=true]:fixed top-0 flex flex-col w-full"
               routes={bleedRoutes}
             >
               <Navbar />
             </Header>
-            <main className="-z-10 isolate min-h-screen">{children}</main>
-            <footer className="isolate">
+            <main className="-z-10 relative min-h-screen">{children}</main>
+            <footer className="z-0 relative">
               <Footer />
             </footer>
           </DictionaryProvider>

@@ -13,9 +13,10 @@ import {
   IconSphere,
   IconX,
 } from "@tabler/icons-react";
-import { useEffect, useRef, useState } from "react";
+import { ReactNode, useEffect, useRef, useState } from "react";
+import { WikiSidebarNavToggle } from "../WikiSidebarNav/WikiSidebarNavToggle";
 
-export function Searchbar() {
+export function Searchbar({ children }: { children?: ReactNode }) {
   const inputRef = useRef<HTMLInputElement>(null!);
   const [inputFilterValue, setInputFilterValue] = useState("");
 
@@ -39,15 +40,9 @@ export function Searchbar() {
   }, []);
 
   return (
-    <div className="flex gap-1 pointer-events-auto">
+    <div className="z-10 relative flex gap-1 pointer-events-auto w-full">
       <div className="group relative flex min-h-[3rem] w-full rounded-lg text-base caret-white backdrop-blur-md bg-zinc-800/90 focus-within:bg-zinc-700/70 focus-within:ring-1zz ring-white/10 ring-inset">
-        <button
-          type="button"
-          className="grid place-items-center pl-3 pr-2 rounded-tl-lg rounded-bl-lg outline-none appearance-none focus-visible:ring-1 ring-white ring-inset text-zinc-500 bg-transparent"
-          onClick={resetQueryFilter}
-        >
-          {inputFilterValue === "" ? <IconSearch /> : <IconX />}
-        </button>
+        {children}
         <input
           type="text"
           ref={inputRef}
@@ -67,6 +62,13 @@ export function Searchbar() {
           // onBlur={unfocusItemLinks}
           // onKeyDown={arrowKeyNav}
         />
+        <button
+          type="button"
+          className="grid place-items-center pl-3 pr-3 rounded-tl-lg rounded-bl-lg outline-none appearance-none focus-visible:ring-1 ring-white ring-inset text-zinc-500 bg-transparent"
+          onClick={resetQueryFilter}
+        >
+          {inputFilterValue === "" ? <IconSearch /> : <IconX />}
+        </button>
       </div>
     </div>
   );

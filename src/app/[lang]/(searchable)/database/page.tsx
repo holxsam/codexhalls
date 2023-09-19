@@ -1,7 +1,7 @@
 export default function DatabasePage() {
   return (
-    <div className="flex flex-col gap-8">
-      <h1 className="text-7xl uppercase font-bold">Database Page</h1>
+    <div className="flex flex-col gap-8 py-4">
+      <h1 className="text-3xl uppercase font-bold">Database Page</h1>
       <p>
         Lorem ipsum dolor sit amet consectetur, adipisicing elit. Magni dolore
         veritatis rerum necessitatibus exercitationem eum, praesentium quo

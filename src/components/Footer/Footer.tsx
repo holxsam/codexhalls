@@ -26,7 +26,7 @@ export const Footer = () => {
   return (
     <div
       id="footer"
-      className="w-full bg-black/50zz backdrop-blur-xl scroll-mt-24 py-[5rem] border-t border-white/[8%]  bg-[#0C0C0D]/80"
+      className="w-full bg-black/50zz backdrop-blur-xl scroll-mt-24 py-[5rem] border-t border-white/[8%] bg-[#0C0C0D]/80"
     >
       <section className="pack-content w-full gap-16 sm:gap-28 flex flex-col sm:flex-row">
         <section className="flex flex-col gap-1">

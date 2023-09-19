@@ -25,7 +25,7 @@ export default async function SearchLayout({
       <section className="-z-10 fixed top-0 left-0 flex flex-col w-full">
         <Graph data={graphData} />
       </section>
-      <div className="flex flex-col sm:flex-row gap-4 w-full pack-content pointer-events-none">
+      <div className="flex flex-col sm:flex-row sm:gap-8 w-full pack-content pointer-events-none">
         <Sidebar />
         {children}
       </div>
@@ -36,6 +36,7 @@ export default async function SearchLayout({
 const fetchGraphDataWithSimulation = cache(async (): Promise<GraphData> => {
   // large data to test for performance:
   // const data = getLargeData();
+  console.log("CALLED: fetchGraphDataWithSimulation()");
 
   // random data to test the force layout:
   const data = generateRandomGraph(200, 2);

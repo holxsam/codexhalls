@@ -12,6 +12,7 @@
     "@formatjs/intl-localematcher": "^0.4.0",
     "@headlessui/react": "1.7.14",
     "@juggle/resize-observer": "^3.4.0",
+    "@radix-ui/react-accordion": "^1.1.2",
     "@react-spring/three": "^9.7.3",
     "@react-three/drei": "^9.83.3",
     "@react-three/fiber": "^8.14.1",

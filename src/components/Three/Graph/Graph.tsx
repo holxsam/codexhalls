@@ -61,9 +61,9 @@ export function Graph({ data }: { data: GraphData }) {
         <Lights />
         <GraphSceneAndControls />
         <Helpers
-          stats
-          // axes
-          // gizmo
+        // stats
+        // axes
+        // gizmo
         />
       </Canvas>
     </div>
