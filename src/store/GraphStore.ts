@@ -46,7 +46,7 @@ export type GraphState = {
   nodeDragId: string;
   cameraChanging: boolean;
   animating: boolean;
-  mode: "sphere" | "tree";
+  mode: "sphere" | "tree" | "tree2d";
   touchControls: boolean;
   fullscreen: boolean;
 
@@ -148,4 +148,22 @@ export const useGraphStore = create<GraphState & GraphAction>()((set) => ({
   setMinimizedPosition: (pos) => set(() => ({ minimizedPosition: pos })),
   setGraphPosition: (pos) => set(() => ({ graphPosition: pos })),
   setGraphScale: (scale) => set(() => ({ graphScale: scale })),
+}));
+
+export type OfflineGraphState = {
+  enableGraph: boolean;
+};
+
+export type OfflineGraphAction = {
+  setEnableGraph: (value: boolean) => void;
+  toggleEnableGraph: () => void;
+};
+
+export const useOfflineGraphStore = create<
+  OfflineGraphState & OfflineGraphAction
+>()((set) => ({
+  enableGraph: false,
+  setEnableGraph: (value: boolean) => set((state) => ({ enableGraph: value })),
+  toggleEnableGraph: () =>
+    set(({ enableGraph }) => ({ enableGraph: !enableGraph })),
 }));

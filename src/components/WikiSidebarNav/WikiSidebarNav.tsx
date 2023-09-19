@@ -6,7 +6,10 @@ import { Fragment, ReactNode, forwardRef } from "react";
 import { WikiSidebarNavToggle } from "./WikiSidebarNavToggle";
 import { cn } from "@/utils/utils";
 import { useLocalelessPathname } from "@/hooks/useLocalelessPathname";
-import { IconChevronDown } from "@tabler/icons-react";
+import {
+  IconChevronDown,
+  IconSquareRoundedChevronRightFilled,
+} from "@tabler/icons-react";
 import { Searchbar } from "../Searchbar/Searchbar";
 import { useGraphStore } from "@/store/GraphStore";
 import { AnimatePresence, motion } from "framer-motion";
@@ -36,29 +39,27 @@ export const WikiSidebarNav = ({ links }: { links: WikiNavItem[] }) => {
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: 100 }}
                 transition={{ type: "tween" }}
-                className={
-                  cn("pl-5")
-                  // "pl-5 transition-[transform_opacity]"
-                  // open
-                  //   ? "visible opacity-100 translate-y-0"
-                  //   : "invisible opacity-0 -translate-y-2/3"
-                }
+                className={cn(
+                  fullscreen ? "h-min" : "h-full",
+                  "pl-[14px]zz backdrop-blur-sm bg-zinc-900/90 rounded-md overflow-hidden [box-shadow:inset_0_0_0_1px_rgba(255,255,255,0.1)]zz"
+                )}
               >
                 <ul
                   className={cn(
                     // mobile/desktop:
                     // "border border-red-500",
-                    "z-0",
-                    "flex min-h-minzz h-[calc(100vh-64px-48px-24px-64px)] zzh-[500px] transition-[transform_opacity] duration-300 overflow-y-scroll zzoverflow-hidden",
-                    "custom-scrollbar-tinyzz [direction:rtl] [&>*]:[direction:ltr]",
-                    "scrollbar-thin scrollbar-thumb-white/30 scrollbar-track-white/10 hover:scrollbar-thumb-white/50 h-min",
+                    // fullscreen ? "h-min" : "h-full",
+                    "z-0 py-2 pb-2zz h-full pl-[14px]",
+                    "flex overflow-y-auto",
+                    "custom-scrollbar-tinyzz [direction:rtl]zz [&>*]:[direction:ltr]zz",
+                    "scrollbar-thin scrollbar-thumb-white/10 scrollbar-track-white/5 hover:scrollbar-thumb-white/20",
                     fullscreen
                       ? "max-h-[calc(100vh-64px-48px-24px-64px-24px)]"
                       : "max-h-[calc(100vh-64px-48px-24px-64px-24px-300px)]",
                     // mobile:
-                    "flex-col gap-0 w-full absolutezz z-10 fixed top-0 left-0 pt-48 pb-2zz backdrop-blur-md shadow-lg bg-black/80",
+                    // "flex-col gap-0 w-full absolutezz z-10 top-0 left-0 pt-48zz pb-2zz backdrop-blur-md shadow-lg bg-black/80",
                     // desktop:
-                    "sm:flex-col sm:items-centerzz sm:gap-4zz sm:w-auto sm:relative sm:top-auto sm:left-auto sm:pt-0 pb-16zz sm:bg-transparent sm:shadow-none sm:backdrop-blur-none"
+                    "flex-col sm:w-auto relative top-auto left-auto bg-transparent shadow-none sm:backdrop-blur-none"
                     // mobile: show list depending on open state:
                     // desktop: ALWAYS show the list:
                     // "sm:visiblezz sm:opacity-100 sm:translate-y-0"
@@ -74,22 +75,19 @@ export const WikiSidebarNav = ({ links }: { links: WikiNavItem[] }) => {
                               href={link.href}
                               // onClick={close}
                               className={cn(
-                                // mobile/desktop:
-                                "relative flex items-center capitalize text-sm outline-none appearance-none whitespace-nowrap",
-                                // mobile:
-                                // "pl-4 pr-8 h-12 w-full justify-end font-medium",
-                                // desktop:
-                                // "sm:ml-2zz sm:pl-0zz sm:pr-0 sm:h-10 sm:w-min sm:justify-normal sm:font-medium",
-                                "pl-4 pr-0 h-10 w-min justify-normal font-medium",
-                                // mobile colors:
-                                // "text-zinc-400 hover:text-white focus-visible:text-white bg-transparent hover:bg-zinc-800/80 focus-visible:bg-zinc-800/80 hover:shadow-none focus-visible:shadow-none",
-                                // desktop colors:
-                                "sm:text-zinc-500 sm:hover:text-white sm:focus-visible:text-white sm:bg-transparent sm:hover:bg-transparent sm:focus-visible:bg-transparent"
-                                // "sm:[box-shadow:inset_2px_0_0_0_rgba(255,255,255,0.1)] sm:hover:[box-shadow:inset_2px_0_0_0_rgba(255,255,255,0.3)] sm:focus-visible:[box-shadow:inset_2px_0_0_0_rgba(255,255,255,0.3)]",
-                                // link.href === pathname &&
-                                //   "sm:[box-shadow:inset_2px_0_0_0_white_!important] sm:text-white"
+                                "outline-none appearance-none",
+                                "relative flex gap-2 items-center h-10 w-min",
+                                "capitalize text-sm font-light whitespace-nowrap",
+                                "text-white/20 hover:text-white focus-visible:text-white bg-transparent hover:bg-transparent focus-visible:bg-transparent"
                               )}
                             >
+                              <IconSquareRoundedChevronRightFilled
+                                size={20}
+                                className={cn(
+                                  "transition-[transform]",
+                                  open ? "rotate-90" : "rotate-0"
+                                )}
+                              />
                               {link.name}
                             </Link>
                           </Disclosure.Button>
@@ -110,23 +108,14 @@ export const WikiSidebarNav = ({ links }: { links: WikiNavItem[] }) => {
                                       href={sublink.href}
                                       // onClick={close}
                                       className={cn(
-                                        // mobile/desktop:
-                                        "relative flex items-center capitalize text-sm outline-none appearance-none whitespace-nowrap ml-4",
-                                        // mobile:
-                                        // "pl-4 pr-8 h-12 w-full justify-end font-medium",
-                                        // desktop:
-                                        "pl-4 pr-0 h-10 w-min justify-normal font-medium",
-                                        // // mobile:
-                                        // "pl-4 pr-8 h-12 w-full justify-end font-medium",
-                                        // // desktop:
-                                        // "sm:pl-0zz sm:pr-0 sm:h-10 sm:w-min sm:justify-normal sm:font-medium",
-                                        // mobile colors:
-                                        // "text-zinc-400 hover:text-white focus-visible:text-white bg-transparent hover:bg-zinc-800/80 focus-visible:bg-zinc-800/80 hover:shadow-none focus-visible:shadow-none",
-                                        // desktop colors:
-                                        "sm:text-zinc-500 sm:hover:text-white sm:focus-visible:text-white sm:bg-transparent sm:hover:bg-transparent sm:focus-visible:bg-transparent ",
-                                        // "sm:[box-shadow:inset_2px_0_0_0_rgba(255,255,255,0.1)] sm:hover:[box-shadow:inset_2px_0_0_0_rgba(255,255,255,0.3)] sm:focus-visible:[box-shadow:inset_2px_0_0_0_rgba(255,255,255,0.3)]",
+                                        "outline-none appearance-none",
+                                        "relative flex items-center",
+                                        "capitalize text-sm whitespace-nowrap font-light",
+                                        "ml-[9px] pl-6 h-10 w-min",
+                                        "text-white/20 hover:text-white focus-visible:text-white bg-transparent hover:bg-transparent focus-visible:bg-transparent ",
+                                        "[box-shadow:inset_2px_0_0_0_rgba(255,255,255,0.1)] hover:[box-shadow:inset_2px_0_0_0_rgba(255,255,255,0.3)] focus-visible:[box-shadow:inset_2px_0_0_0_rgba(255,255,255,0.3)]",
                                         link.href === sublink.name &&
-                                          "sm:[box-shadow:inset_2px_0_0_0_white_!important] sm:text-white"
+                                          "[box-shadow:inset_2px_0_0_0_white_!important] text-white"
                                       )}
                                     >
                                       {sublink.name}

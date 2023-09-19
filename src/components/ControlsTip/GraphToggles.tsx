@@ -1,28 +1,106 @@
 "use client";
 
-import { useGraphStore } from "@/store/GraphStore";
+import { useGraphStore, useOfflineGraphStore } from "@/store/GraphStore";
+import { cn } from "@/utils/utils";
 import {
   IconArrowsMaximize,
   IconArrowsMinimize,
+  IconBinaryTree,
   IconBinaryTree2,
+  IconCoffeeOff,
+  IconEyeOff,
   IconHandFinger,
   IconHandFingerOff,
+  IconHelpSmall,
   IconSphere,
 } from "@tabler/icons-react";
 
 export function GraphModeToggle() {
   const toggleMode = useGraphStore((state) => state.toggleMode);
   const mode = useGraphStore((state) => state.mode);
+  const setMode = useGraphStore((state) => state.setMode);
+  const enableGraph = useOfflineGraphStore((state) => state.enableGraph);
+  const setEnableGraph = useOfflineGraphStore((state) => state.setEnableGraph);
+
+  const toggleSphere = () => {
+    setMode("sphere");
+    setEnableGraph(true);
+  };
+  const toggle3dTree = () => {
+    setMode("tree");
+    setEnableGraph(true);
+  };
+  const toggle2dTree = () => {
+    setMode("tree");
+    setEnableGraph(true);
+  };
+  const toggleGraphOff = () => {
+    setEnableGraph(false);
+  };
+
+  const className = cn(
+    "outline-none appearance-none",
+    "font-bold capitalize text-sm whitespace-nowrap ",
+    "flex items-center justify-center gap-1 rounded-md h-full aspect-square",
+    "bg-transparent focus-visible:ring-1 ring-white ring-inset text-zinc-700 hover:text-zinc-50"
+  );
 
   return (
-    <button
-      type="button"
-      className="flex items-center justify-center gap-1 whitespace-nowrap h-full outline-none bg-transparent appearance-none font-bold capitalize text-sm focus-visible:ring-1 ring-white ring-inset text-zinc-500 hover:text-zinc-50"
-      onClick={toggleMode}
-    >
-      {mode === "tree" ? <IconBinaryTree2 /> : <IconSphere />}
-      {mode === "tree" ? "tree" : "sphere"}
-    </button>
+    <div className="flex rounded-md overflow-hidden h-12 p-[3px] bg-zinc-800/90 backdrop-blur-sm">
+      <button
+        type="button"
+        className={cn(
+          className,
+          mode === "sphere" &&
+            enableGraph &&
+            "bg-white/10 text-zinc-300 hover:text-zinc-50"
+        )}
+        onClick={toggleSphere}
+      >
+        <IconSphere />
+      </button>
+      <button
+        type="button"
+        className={cn(
+          className,
+          mode === "tree" &&
+            enableGraph &&
+            "bg-white/10 text-zinc-300 hover:text-zinc-50",
+          "relative"
+        )}
+        onClick={toggle3dTree}
+      >
+        <span className="absolute top-0 left-0 text-[8px] leading-[8px] m-[3px]">
+          3D
+        </span>
+        <IconBinaryTree />
+      </button>
+      <button
+        type="button"
+        className={cn(
+          className,
+          "relative"
+          // mode === "sphere" && enableGraph &&"bg-white/10 text-zinc-300 hover:text-zinc-50",
+        )}
+        onClick={toggle2dTree}
+      >
+        <span className="absolute top-0 left-0 text-[8px] leading-[8px] m-[3px]">
+          2D
+        </span>
+        <IconBinaryTree2 />
+      </button>
+      <button
+        type="button"
+        className={cn(
+          className,
+          "uppercase",
+          !enableGraph && "bg-white/10 text-zinc-300 hover:text-zinc-50"
+        )}
+        onClick={toggleGraphOff}
+      >
+        Off
+      </button>
+    </div>
   );
 }
 
@@ -35,11 +113,16 @@ export function TouchControlsToggle() {
   return (
     <button
       type="button"
-      className="flex items-center justify-center gap-1 whitespace-nowrap h-full outline-none bg-transparent appearance-none font-bold capitalize text-sm focus-visible:ring-1 ring-white ring-inset text-zinc-500 hover:text-zinc-50"
+      className={cn(
+        "outline-none appearance-none",
+        "font-bold capitalize text-sm whitespace-nowrap",
+        "flex items-center justify-center gap-1 h-full aspect-square rounded-md",
+        "backdrop-blur-sm bg-zinc-800/90 focus-visible:ring-1 ring-white ring-inset",
+        "text-zinc-500 hover:text-zinc-200 focus-visible:text-zinc-200"
+      )}
       onClick={toggleTouchControls}
     >
       {enableMobile ? <IconHandFinger /> : <IconHandFingerOff />}
-      {enableMobile ? "touch on" : "touch off"}
     </button>
   );
 }
@@ -51,11 +134,41 @@ export function FullscreenToggle() {
   return (
     <button
       type="button"
-      className="flex items-center justify-center gap-1 whitespace-nowrap h-full outline-none bg-transparent appearance-none font-bold capitalize text-sm focus-visible:ring-1 ring-white ring-inset text-zinc-500 hover:text-zinc-50"
+      className={cn(
+        "outline-none appearance-none",
+        "font-bold capitalize text-sm whitespace-nowrap",
+        "flex items-center justify-center gap-1 h-full aspect-square rounded-md",
+        "backdrop-blur-sm bg-zinc-800/90 focus-visible:ring-1 ring-white ring-inset",
+        "text-zinc-500 hover:text-zinc-200 focus-visible:text-zinc-200"
+      )}
       onClick={toggleFullscreen}
     >
-      {fullscreen ? <IconArrowsMinimize /> : <IconArrowsMaximize />}
-      {fullscreen ? "minimize" : "fullscreen"}
+      {fullscreen ? (
+        <IconArrowsMinimize size={22} />
+      ) : (
+        <IconArrowsMaximize size={22} />
+      )}
+      {/* {fullscreen ? "minimize" : "fullscreen"} */}
+    </button>
+  );
+}
+export function HelpToggle() {
+  const fullscreen = useGraphStore((state) => state.fullscreen);
+  const toggleFullscreen = useGraphStore((state) => state.toggleFullscreen);
+
+  return (
+    <button
+      type="button"
+      className={cn(
+        "outline-none appearance-none",
+        "font-bold capitalize text-sm whitespace-nowrap",
+        "flex items-center justify-center gap-1 h-10 w-10 rounded-md",
+        "backdrop-blur-sm bg-zinc-800/90 focus-visible:ring-1 ring-white ring-inset",
+        "text-zinc-500 hover:text-zinc-200 focus-visible:text-zinc-200"
+      )}
+      onClick={toggleFullscreen}
+    >
+      <IconHelpSmall size={30} />
     </button>
   );
 }

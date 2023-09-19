@@ -5,6 +5,7 @@ import {
   TouchControlsToggle,
   GraphModeToggle,
   FullscreenToggle,
+  HelpToggle,
 } from "../ControlsTip/GraphToggles";
 import { WikiNavItem, WikiSidebarNav } from "../WikiSidebarNav/WikiSidebarNav";
 import { cn } from "@/utils/utils";
@@ -51,21 +52,24 @@ export function Sidebar() {
   return (
     <aside
       className={cn(
-        "sticky top-[64px] h-min sm:h-[calc(100vh-64px)] min-w-[300px] pt-4 flex flex-col gap-8"
+        "sticky top-[64px] h-min sm:h-[calc(100vh-64px)] sm:min-w-[300px] pt-4 flex flex-col gap-4"
         // "border border-green-500"
       )}
     >
       <div className="flex flex-col">
-        <div className="flex pointer-events-auto justify-between">
-          <TouchControlsToggle />
+        <div className="pointer-events-auto flex justify-between">
+          <div className="flex h-12 p-[2px] bg-zinc-800/90 rounded-md">
+            {/* <HelpToggle /> */}
+            <TouchControlsToggle />
+            <FullscreenToggle />
+          </div>
           <GraphModeToggle />
-          <FullscreenToggle />
         </div>
         <MinimizeTarget />
       </div>
       <nav
         className={cn(
-          "relative flex flex-col gap-4 pointer-events-auto "
+          "relative flex flex-col gap-2 pointer-events-auto "
           // "border border-blue-500"
         )}
       >

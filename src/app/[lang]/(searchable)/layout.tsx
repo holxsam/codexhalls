@@ -36,7 +36,6 @@ export default async function SearchLayout({
 const fetchGraphDataWithSimulation = cache(async (): Promise<GraphData> => {
   // large data to test for performance:
   // const data = getLargeData();
-  console.log("CALLED: fetchGraphDataWithSimulation()");
 
   // random data to test the force layout:
   const data = generateRandomGraph(200, 2);
