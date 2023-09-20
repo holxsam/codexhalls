@@ -16,6 +16,9 @@ import { ReactNode, cache } from "react";
 import { Graph } from "@/components/Three/Graph/Graph";
 import { Sidebar } from "@/components/Sidebar/Sidebar";
 
+// import testNodes from "@/test-data/test-nodes.json";
+// import testEdges from "@/test-data/test-edges.json";
+
 export default async function SearchLayout({
   params,
   children,
@@ -48,6 +51,10 @@ const fetchGraphDataWithSimulation = cache(async (): Promise<GraphData> => {
 
   // stable data to test the force layout:
   // const data = stableData as GraphData;
+  // const data: GraphData = { nodes: testNodes.nodes, edges: testEdges.edges };
+
+  // console.log(data);
+  // console.log(forceLayout);
 
   simulateForces(data);
   getSpherePositions(data);
