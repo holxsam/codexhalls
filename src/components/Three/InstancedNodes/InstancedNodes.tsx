@@ -149,16 +149,6 @@ export const InstancedNodes = forwardRef<THREE.InstancedMesh, BoxesProps>(
             normalized
           />
         </icosahedronGeometry>
-        {/* <boxGeometry>
-          <instancedBufferAttribute
-            attach="attributes-color"
-            array={COLORS}
-            count={COLORS.length / 3}
-            itemSize={3}
-            normalized
-          />
-        </boxGeometry> */}
-        {/* <meshStandardMaterial /> */}
         <meshPhongMaterial shininess={100} />
       </instancedMesh>
     );

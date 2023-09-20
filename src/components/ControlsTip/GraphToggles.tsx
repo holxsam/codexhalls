@@ -7,8 +7,6 @@ import {
   IconArrowsMinimize,
   IconBinaryTree,
   IconBinaryTree2,
-  IconCoffeeOff,
-  IconEyeOff,
   IconHandFinger,
   IconHandFingerOff,
   IconHelpSmall,
@@ -16,7 +14,6 @@ import {
 } from "@tabler/icons-react";
 
 export function GraphModeToggle() {
-  const toggleMode = useGraphStore((state) => state.toggleMode);
   const mode = useGraphStore((state) => state.mode);
   const setMode = useGraphStore((state) => state.setMode);
   const enableGraph = useOfflineGraphStore((state) => state.enableGraph);
@@ -46,7 +43,7 @@ export function GraphModeToggle() {
   );
 
   return (
-    <div className="flex rounded-md overflow-hidden h-12 p-[2px] bg-zinc-800/90 backdrop-blur-sm">
+    <div className="flex rounded-md overflow-hidden h-12 p-[3px] bg-zinc-800/90 backdrop-blur-sm">
       <button
         type="button"
         className={cn(

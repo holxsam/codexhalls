@@ -156,6 +156,7 @@ export const GraphScene = memo(function GraphScene() {
       },
       onRest: () => {
         setAnimating(false);
+        boxesRef.current?.computeBoundingSphere(); // if you don't recompute the bounding box of the instancedmesh after the position changes then raycasting won't work on nodes outside the bounding sphere
       },
     };
   }, [mode]);
