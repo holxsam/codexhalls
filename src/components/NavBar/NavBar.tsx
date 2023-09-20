@@ -75,7 +75,7 @@ export const Navbar = () => {
         )}
       />
 
-      <div className="flex justify-between zzzsm:justify-normal zzzsm:gap-8 items-center zzzfullscreen-pack-content pack-content h-full">
+      <div className="flex justify-between items-center pack-content h-full">
         <Link href="/" className="relative z-10">
           <LogoWithText />
         </Link>

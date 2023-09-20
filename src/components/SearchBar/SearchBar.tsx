@@ -41,8 +41,8 @@ export function Searchbar({ children }: { children?: ReactNode }) {
 
   return (
     <div className="z-10 relative flex gap-1 pointer-events-auto w-full">
-      <div className="group relative flex min-h-[3rem] w-full rounded-lg text-base caret-white backdrop-blur-md bg-zinc-800/90 focus-within:bg-zinc-700/70 focus-within:ring-1zz ring-white/10 ring-inset">
-        {children}
+      <div className="group relative flex min-h-[3rem] w-full rounded-lg text-base caret-white backdrop-blur-md bg-zinc-800/90 focus-within:bg-zinc-700/70">
+        <div id="wiki-search-bar"></div>
         <input
           type="text"
           ref={inputRef}

@@ -4,13 +4,9 @@ import { LineHighlight } from "@/components/Three/LineHighlight/LineHighlight";
 import { Lines } from "@/components/Three/Lines/Lines";
 import { useGraphStore } from "@/store/GraphStore";
 import { Vector3Array } from "@/utils/types";
-import {
-  getFibonocciSphereRadiusFromDistance,
-  getFibonocciSphere,
-  hexToArray,
-} from "@/utils/utils";
+import { hexToArray } from "@/utils/utils";
 import { useSpring, config } from "@react-spring/three";
-import { memo, useMemo, useRef, Ref } from "react";
+import { memo, useMemo, useRef, Ref, useLayoutEffect } from "react";
 
 const o = new THREE.Object3D(); // reusable object
 
@@ -27,20 +23,21 @@ export const GraphScene = memo(function GraphScene() {
   const setAnimating = useGraphStore((state) => state.setAnimating);
   const setHover = useGraphStore((state) => state.setNodeHoverId);
 
-  const radius = useMemo(
-    () => getFibonocciSphereRadiusFromDistance(nodes.length, 15),
+  const spherePositions = useMemo(
+    () => nodes.map((node) => node.spherePosition),
     [nodes]
   );
 
-  // Boxes state:
-  const startPositions = useMemo(
-    () => nodes.map((_, i) => getFibonocciSphere(i, nodes.length, radius)),
-    [nodes, radius]
-  );
-  const endPositions = useMemo(
-    () => nodes.map((node) => node.position),
+  const tree3dPositions = useMemo(
+    () => nodes.map((node) => node.tree3dPosition),
     [nodes]
   );
+
+  const tree2dPositions = useMemo(
+    () => nodes.map((node) => node.tree2dPosition),
+    [nodes]
+  );
+
   const scales = useMemo(() => nodes.map((node) => node.scale), [nodes]);
   const rotations = useMemo(() => nodes.map((node) => node.rotation), [nodes]);
   const colors = useMemo(
@@ -48,12 +45,12 @@ export const GraphScene = memo(function GraphScene() {
     [nodes]
   );
 
-  const length = endPositions.length;
+  const length = tree3dPositions.length;
 
   const nodePositionVectorMap = useRef(
     new Map(
       nodes.map(({ id }, i) => {
-        const [x, y, z] = startPositions[i];
+        const [x, y, z] = spherePositions[i];
         return [id, new THREE.Vector3(x, y, z)];
       })
     )
@@ -99,26 +96,36 @@ export const GraphScene = memo(function GraphScene() {
   // this spreads an array into an object (despite what the infered type says)
   // ex: ["cat", "dog", "bob"] -> { 0: "cat", 1: "dog", 2: "bob"}
   // we need it in this form or else useSpring cannot animate the values
-  // it cannot animate an array of arrays which is what startPositions/endPositions are
+  // it cannot animate an array of arrays which is what spherePositions/tree3dPositions/tree2dPositions are
   const sphere = useMemo(
-    () => Object.assign({ opacity: 0.05 }, startPositions),
-    [startPositions]
+    () => Object.assign({ opacity: 0.05 }, spherePositions),
+    [spherePositions]
   );
 
-  const tree = useMemo(
-    () => Object.assign({ opacity: 0.2 }, endPositions),
-    [endPositions]
+  const tree3d = useMemo(
+    () => Object.assign({ opacity: 0.2 }, tree3dPositions),
+    [tree3dPositions]
   );
 
-  const [spring, api] = useSpring(
-    {
-      from: mode === "tree" ? sphere : tree,
-      to: mode === "tree" ? tree : sphere,
+  const tree2d = useMemo(
+    () => Object.assign({ opacity: 0.1 }, tree2dPositions),
+    [tree2dPositions]
+  );
+
+  const [spring, api] = useSpring(() => {
+    let animate = tree3d;
+    if (mode === "tree3d") animate = tree3d;
+    if (mode === "sphere") animate = sphere;
+    if (mode === "tree2d") animate = tree2d;
+
+    return {
+      to: animate,
       config: config.stiff,
       onStart: () => {
         setAnimating(true);
         setHover("");
       },
+
       onChange: (result) => {
         if (!boxesRef.current || !linesRef.current) return;
 
@@ -150,15 +157,21 @@ export const GraphScene = memo(function GraphScene() {
       onRest: () => {
         setAnimating(false);
       },
-    },
-    [mode]
-  );
+    };
+  }, [mode]);
+
+  useLayoutEffect(() => {
+    if (!linesRef.current) return;
+
+    // @ts-ignore / update opacity
+    linesRef.current.material.opacity = 0.05;
+  }, [linesRef]);
 
   return (
     <>
       <InstancedNodes
         ref={boxesRef as Ref<THREE.InstancedMesh>}
-        positions={startPositions}
+        positions={spherePositions}
         colors={colors}
         scales={scales}
         rotations={rotations}

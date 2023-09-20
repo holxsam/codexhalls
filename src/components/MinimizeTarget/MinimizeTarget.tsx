@@ -1,6 +1,6 @@
 "use client";
 
-import { useGraphStore } from "@/store/GraphStore";
+import { useGraphStore, useOfflineGraphStore } from "@/store/GraphStore";
 import { motion } from "framer-motion";
 import { useEffect, useRef } from "react";
 
@@ -10,6 +10,7 @@ export function MinimizeTarget() {
     (state) => state.setMinimizedPosition
   );
   const fullscreen = useGraphStore((state) => state.fullscreen);
+  const enableGraph = useOfflineGraphStore((state) => state.enableGraph);
 
   useEffect(() => {
     const updateTargetPosition = () => {
@@ -27,18 +28,15 @@ export function MinimizeTarget() {
     return () => {
       window.removeEventListener("resize", updateTargetPosition);
     };
-  }, []);
+  }, [setMinimizedPosition]);
 
   return (
     <div className="relative pointer-events-none">
-      <div
-        ref={ref}
-        className="absolute w-full h-[300px] borderzzborder-red-500/10"
-      />
+      <div ref={ref} className="absolute w-full h-[300px]" />
       <motion.div
-        className="w-full borderzzborder-blue-500/10 hidden sm:block"
-        initial={{ height: fullscreen ? 0 : 300 }}
-        animate={{ height: fullscreen ? 0 : 300 }}
+        className="w-full hidden sm:block"
+        initial={{ height: fullscreen || !enableGraph ? 0 : 300 }}
+        animate={{ height: fullscreen || !enableGraph ? 0 : 300 }}
       />
     </div>
   );

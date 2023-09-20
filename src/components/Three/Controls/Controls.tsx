@@ -5,7 +5,6 @@ import { useGesture } from "@use-gesture/react";
 import { ReactNode, RefObject, useEffect, useMemo, useRef } from "react";
 import { Vector3Array } from "@/utils/types";
 import { clamp } from "three/src/math/MathUtils.js";
-import { useKeyboardDebug } from "@/hooks/useKeyboardDebug";
 import { useGraphStore } from "@/store/GraphStore";
 
 // we reuse these in our animation loop:
@@ -13,11 +12,7 @@ const xVector = new THREE.Vector3(1, 0, 0).normalize();
 const yVector = new THREE.Vector3(0, 1, 0).normalize();
 const quaternionX = new THREE.Quaternion();
 const quaternionY = new THREE.Quaternion();
-// const obj = new THREE.Object3D();
 const o = new THREE.Object3D();
-
-const vec = new THREE.Vector3(); // create once and reuse
-const pos = new THREE.Vector3(); // create once and reuse
 
 export type ControlsProps = {
   children?: ReactNode;
@@ -56,29 +51,26 @@ export const Controls = ({
 }: ControlsProps) => {
   const groupRef = useRef<THREE.Group>(null!);
   const gl = useThree((state) => state.gl);
-  const camera = useThree((state) => state.camera);
   const explDomElement = domElement || gl.domElement;
 
-  const setGraphPosition = useGraphStore((state) => state.setGraphPosition);
+  const [, anim] = useSpring(() => {
+    return {
+      quaternion: [0, 0, 0, 1],
+      position: [0, 0, 0],
+      scale: 1,
+      config,
+      onChange: (result) => {
+        const scale = result.value.scale;
+        const [px, py, pz] = result.value.position;
+        const [x, y, z, w] = result.value.quaternion;
 
-  // const { initialPosition, initialQuaternion, initialScale, o } =
-  //   useMemo(() => {
-  //     obj.position.set(...position);
-  //     obj.rotation.set(...rotation);
-  //     obj.scale.setScalar(scale);
+        groupRef.current.position.set(px, py, pz);
+        groupRef.current.scale.setScalar(scale);
+        groupRef.current.quaternion.set(x, y, z, w);
+      },
+    };
+  });
 
-  //     const [x, y, z, w] = obj.quaternion.toArray();
-
-  //     return {
-  //       initialQuaternion: [x, y, z, w],
-  //       initialPosition: obj.position.toArray(),
-  //       initialScale: scale,
-  //       o: obj,
-  //     };
-  //   }, [position, rotation, scale]);
-
-  // we only want to do this once (when the component first mounts)
-  // so ignore the react-hooks/exhaustive-deps warning for 'rotation'
   useEffect(() => {
     // set the initial spatial features:
     const group = groupRef.current;
@@ -107,7 +99,7 @@ export const Controls = ({
     anim.start({
       position: o.position.toArray(),
     });
-  }, [position]);
+  }, [anim, position]);
 
   useEffect(() => {
     o.rotation.set(...rotation);
@@ -115,36 +107,17 @@ export const Controls = ({
     anim.start({
       quaternion: [x, y, z, w],
     });
-  }, [rotation]);
+  }, [anim, rotation]);
 
   useEffect(() => {
     o.scale.setScalar(scale);
     anim.start({
       scale: o.scale.x,
     });
-  }, [scale]);
-
-  const [, anim] = useSpring(() => {
-    return {
-      quaternion: [0, 0, 0, 1],
-      position: [0, 0, 0],
-      scale: 1,
-      config,
-      onChange: (result) => {
-        const scale = result.value.scale;
-        const [px, py, pz] = result.value.position;
-        const [x, y, z, w] = result.value.quaternion;
-
-        groupRef.current.position.set(px, py, pz);
-        groupRef.current.scale.setScalar(scale);
-        groupRef.current.quaternion.set(x, y, z, w);
-      },
-    };
-  });
+  }, [anim, scale]);
 
   const bind = useGesture(
     {
-      // enable: false,
       onWheel: ({ direction: [_, y], active, shiftKey }) => {
         // ZOOM:
         if (active && shiftKey) {

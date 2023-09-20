@@ -27,11 +27,11 @@ export function GraphModeToggle() {
     setEnableGraph(true);
   };
   const toggle3dTree = () => {
-    setMode("tree");
+    setMode("tree3d");
     setEnableGraph(true);
   };
   const toggle2dTree = () => {
-    setMode("tree");
+    setMode("tree2d");
     setEnableGraph(true);
   };
   const toggleGraphOff = () => {
@@ -46,13 +46,13 @@ export function GraphModeToggle() {
   );
 
   return (
-    <div className="flex rounded-md overflow-hidden h-12 p-[3px] bg-zinc-800/90 backdrop-blur-sm">
+    <div className="flex rounded-md overflow-hidden h-12 p-[2px] bg-zinc-800/90 backdrop-blur-sm">
       <button
         type="button"
         className={cn(
           className,
-          mode === "sphere" &&
-            enableGraph &&
+          enableGraph &&
+            mode === "sphere" &&
             "bg-white/10 text-zinc-300 hover:text-zinc-50"
         )}
         onClick={toggleSphere}
@@ -63,14 +63,14 @@ export function GraphModeToggle() {
         type="button"
         className={cn(
           className,
-          mode === "tree" &&
-            enableGraph &&
+          enableGraph &&
+            mode === "tree3d" &&
             "bg-white/10 text-zinc-300 hover:text-zinc-50",
           "relative"
         )}
         onClick={toggle3dTree}
       >
-        <span className="absolute top-0 left-0 text-[8px] leading-[8px] m-[3px]">
+        <span className="absolute top-0 left-0 text-[8px] leading-[8px] m-[4px]">
           3D
         </span>
         <IconBinaryTree />
@@ -79,12 +79,14 @@ export function GraphModeToggle() {
         type="button"
         className={cn(
           className,
-          "relative"
-          // mode === "sphere" && enableGraph &&"bg-white/10 text-zinc-300 hover:text-zinc-50",
+          "relative",
+          enableGraph &&
+            mode === "tree2d" &&
+            "bg-white/10 text-zinc-300 hover:text-zinc-50"
         )}
         onClick={toggle2dTree}
       >
-        <span className="absolute top-0 left-0 text-[8px] leading-[8px] m-[3px]">
+        <span className="absolute top-0 left-0 text-[8px] leading-[8px] m-[4px]">
           2D
         </span>
         <IconBinaryTree2 />
@@ -93,8 +95,8 @@ export function GraphModeToggle() {
         type="button"
         className={cn(
           className,
-          "uppercase",
-          !enableGraph && "bg-white/10 text-zinc-300 hover:text-zinc-50"
+          "uppercase text-zinc-600",
+          !enableGraph && "bg-white/10 hover:text-zinc-50"
         )}
         onClick={toggleGraphOff}
       >
@@ -117,8 +119,8 @@ export function TouchControlsToggle() {
         "outline-none appearance-none",
         "font-bold capitalize text-sm whitespace-nowrap",
         "flex items-center justify-center gap-1 h-full aspect-square rounded-md",
-        "backdrop-blur-sm bg-zinc-800/90 focus-visible:ring-1 ring-white ring-inset",
-        "text-zinc-500 hover:text-zinc-200 focus-visible:text-zinc-200"
+        "bg-transparent focus-visible:ring-1 ring-white ring-inset",
+        "text-zinc-300 hover:text-zinc-200 focus-visible:text-zinc-200"
       )}
       onClick={toggleTouchControls}
     >
@@ -129,7 +131,7 @@ export function TouchControlsToggle() {
 
 export function FullscreenToggle() {
   const fullscreen = useGraphStore((state) => state.fullscreen);
-  const toggleFullscreen = useGraphStore((state) => state.toggleFullscreen);
+  const toggle = useGraphStore((state) => state.toggleFullscreenAndSidenav);
 
   return (
     <button
@@ -138,17 +140,16 @@ export function FullscreenToggle() {
         "outline-none appearance-none",
         "font-bold capitalize text-sm whitespace-nowrap",
         "flex items-center justify-center gap-1 h-full aspect-square rounded-md",
-        "backdrop-blur-sm bg-zinc-800/90 focus-visible:ring-1 ring-white ring-inset",
-        "text-zinc-500 hover:text-zinc-200 focus-visible:text-zinc-200"
+        "bg-transparent focus-visible:ring-1 ring-white ring-inset",
+        "text-zinc-300 hover:text-zinc-200 focus-visible:text-zinc-200"
       )}
-      onClick={toggleFullscreen}
+      onClick={toggle}
     >
       {fullscreen ? (
         <IconArrowsMinimize size={22} />
       ) : (
         <IconArrowsMaximize size={22} />
       )}
-      {/* {fullscreen ? "minimize" : "fullscreen"} */}
     </button>
   );
 }

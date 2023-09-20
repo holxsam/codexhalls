@@ -1,3 +1,7 @@
 export default function WayfindersPage() {
-  return <div className="text-7xl font-bold uppercase">Wayfinders Page</div>;
+  return (
+    <div className="py-4">
+      <h1 className="text-3xl font-bold uppercase float-left">Wayfinders</h1>
+    </div>
+  );
 }

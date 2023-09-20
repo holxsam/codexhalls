@@ -1,17 +1,27 @@
 "use client";
 
+import { useLocalelessPathname } from "@/hooks/useLocalelessPathname";
 import { useGraphStore } from "@/store/GraphStore";
 import { cn } from "@/utils/utils";
 import { AnimatePresence, motion } from "framer-motion";
-import { usePathname } from "next/navigation";
-import { ReactNode } from "react";
-
-// DOES NOT CURRENTLY WORK IN PRODUCTION FOR SOME REASON
+import { ReactNode, useEffect } from "react";
 
 type PageTransitionProps = { children?: ReactNode };
 export function PageTransition({ children }: PageTransitionProps) {
-  const pathname = usePathname();
+  const pathname = useLocalelessPathname();
   const fullscreen = useGraphStore((state) => state.fullscreen);
+  const setFullscreen = useGraphStore((state) => state.setFullscreen);
+  const setDesktopSidenav = useGraphStore((state) => state.setDesktopSidenav);
+
+  useEffect(() => {
+    if (pathname === "/") {
+      setFullscreen(true);
+      setDesktopSidenav(true);
+    } else {
+      setFullscreen(false);
+      setDesktopSidenav(true);
+    }
+  }, [pathname, setDesktopSidenav, setFullscreen]);
 
   return (
     <AnimatePresence>

@@ -15,6 +15,9 @@ export const generateRandomGraph = (n = 300, scale = 2): GraphData => {
     nodes: [...Array(n).keys()].map((i) => ({
       id: `${i}s`,
       color: getRandomColorFromSet(),
+      spherePosition: [0, 0, 0],
+      tree2dPosition: [0, 0, 0],
+      tree3dPosition: [0, 0, 0],
       position: [r(), r(), r()],
       scale: [scale, scale, scale],
       rotation: [0, 0, 0],

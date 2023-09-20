@@ -2,14 +2,18 @@
 
 import * as THREE from "three";
 import { Canvas } from "@react-three/fiber";
-import { GraphData, useGraphStore } from "@/store/GraphStore";
 import { Lights } from "../Lights/Lights";
 import { Helpers } from "../Helpers/Helpers";
 import { DISTANCE_FROM_ORIGIN } from "@/utils/constants";
 import { useEffect } from "react";
-import { VisualDebug } from "../../VisualDebug/VisualDebug";
 import { GraphSceneAndControls } from "../GraphSceneAndControls/GraphSceneAndControls";
+import { VisualDebug } from "../../VisualDebug/VisualDebug";
 import { SceneOverlay } from "../SceneOverlay/SceneOverlay";
+import {
+  GraphData,
+  useGraphStore,
+  useOfflineGraphStore,
+} from "@/store/GraphStore";
 
 THREE.ColorManagement.enabled = true;
 
@@ -20,19 +24,17 @@ const cameraPosition = new THREE.Vector3().setFromSphericalCoords(
 );
 
 export function Graph({ data }: { data: GraphData }) {
-  const initGraph = useGraphStore((state) => state.initGraph);
-  const toggleMode = useGraphStore((state) => state.toggleMode);
+  const enableGraph = useOfflineGraphStore((state) => state.enableGraph);
 
   useEffect(() => {
+    const toggleMode = useGraphStore.getState().toggleMode;
     const toggleGraphMode = (e: KeyboardEvent) => {
       if (e.ctrlKey && e.key === "g") {
         e.preventDefault();
         toggleMode();
       }
     };
-
     window.addEventListener("keydown", toggleGraphMode);
-
     return () => {
       window.removeEventListener("keydown", toggleGraphMode);
     };
@@ -44,6 +46,7 @@ export function Graph({ data }: { data: GraphData }) {
   // However, that is NOT the case, even tho its supposed to be cached by the layout.
   // Most likely a next 13 bug.
   useEffect(() => {
+    const initGraph = useGraphStore.getState().initGraph;
     initGraph(data);
   }, []);
 
@@ -57,7 +60,11 @@ export function Graph({ data }: { data: GraphData }) {
       {/* <SceneOverlay>
         <VisualDebug />
       </SceneOverlay> */}
-      <Canvas camera={{ position: cameraPosition, fov: 40 }}>
+      <Canvas
+        camera={{ position: cameraPosition, fov: 40 }}
+        frameloop={enableGraph ? "always" : "never"}
+        className={enableGraph ? "opacity-100" : "opacity-0"}
+      >
         <Lights />
         <GraphSceneAndControls />
         <Helpers

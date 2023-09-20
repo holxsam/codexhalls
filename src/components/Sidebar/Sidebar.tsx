@@ -5,9 +5,9 @@ import {
   TouchControlsToggle,
   GraphModeToggle,
   FullscreenToggle,
-  HelpToggle,
 } from "../ControlsTip/GraphToggles";
 import { WikiNavItem, WikiSidebarNav } from "../WikiSidebarNav/WikiSidebarNav";
+import { MobileWikiSidebarNav } from "../WikiSidebarNav/MobileWikiSidebarNav";
 import { cn } from "@/utils/utils";
 
 const links: WikiNavItem[] = [
@@ -50,53 +50,22 @@ const links: WikiNavItem[] = [
 
 export function Sidebar() {
   return (
-    <aside
-      className={cn(
-        "sticky top-[64px] h-min sm:h-[calc(100vh-64px)] sm:min-w-[300px] pt-4 flex flex-col gap-4"
-        // "border border-green-500"
-      )}
-    >
+    <aside className="sticky top-[64px] h-min sm:h-[calc(100vh-64px)] sm:min-w-[300px] pt-4 flex flex-col gap-4">
       <div className="flex flex-col">
         <div className="pointer-events-auto flex justify-between">
-          <div className="flex h-12 p-[2px] bg-zinc-800/90 rounded-md">
-            {/* <HelpToggle /> */}
+          <GraphModeToggle />
+          <div className="flex h-12 p-[2px]">
             <TouchControlsToggle />
             <FullscreenToggle />
           </div>
-          <GraphModeToggle />
         </div>
         <MinimizeTarget />
       </div>
-      <nav
-        className={cn(
-          "relative flex flex-col gap-2 pointer-events-auto "
-          // "border border-blue-500"
-        )}
-      >
-        {/* <Searchbar /> */}
+      <nav className="relative flex flex-col gap-2 pointer-events-auto">
+        <Searchbar />
         <WikiSidebarNav links={links} />
+        <MobileWikiSidebarNav links={links} />
       </nav>
     </aside>
   );
-}
-{
-  /* <nav className="border-l-2 border-white/[15%]">
-        <ul className="[&>*]:pointer-events-auto flex flex-col gap-4 text-white/20 text-base">
-          <li className="">
-            <Link href="#" className="pl-4 ">
-              Wayfinders
-            </Link>
-          </li>
-          <li className="">
-            <Link href="#" className="pl-4 ">
-              Weapons
-            </Link>
-          </li>
-          <li className="">
-            <Link href="#" className="pl-4 ">
-              Items
-            </Link>
-          </li>
-        </ul>
-      </nav> */
 }

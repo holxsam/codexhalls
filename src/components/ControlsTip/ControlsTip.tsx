@@ -49,7 +49,7 @@ export function TouchControlTips() {
 
 export function MouseContainer({ children }: { children?: ReactNode }) {
   return (
-    <span className="overflow-hidden relative h-4 w-[13px]zzz w-3 rounded-[5px] shadow-[inset_0_0_0_2px] shadow-current">
+    <span className="overflow-hidden relative h-4 w-3 rounded-[5px] shadow-[inset_0_0_0_2px] shadow-current">
       {children}
     </span>
   );
@@ -58,7 +58,7 @@ export function MouseContainer({ children }: { children?: ReactNode }) {
 export function PrimaryMouseButton() {
   return (
     <MouseContainer>
-      <span className="flex w-1/2 h-1/2 bg-current animate-pulsezzz" />
+      <span className="flex w-1/2 h-1/2 bg-current" />
     </MouseContainer>
   );
 }
@@ -66,7 +66,7 @@ export function PrimaryMouseButton() {
 export function SecondaryMouseButton() {
   return (
     <MouseContainer>
-      <span className="flex w-1/2 h-1/2 bg-current animate-pulsezzz absolute right-0" />
+      <span className="flex w-1/2 h-1/2 bg-current absolute right-0" />
     </MouseContainer>
   );
 }
@@ -74,7 +74,7 @@ export function SecondaryMouseButton() {
 export function AuxilaryMouseButton() {
   return (
     <MouseContainer>
-      <span className="flex w-[2px] h-1 bg-current animate-pulsezzz absolute top-[4px] left-[calc(50%-1px)]" />
+      <span className="flex w-[2px] h-1 bg-current absolute top-[4px] left-[calc(50%-1px)]" />
     </MouseContainer>
   );
 }
