@@ -103,7 +103,6 @@ const simulateForces = (data: GraphData) => {
     const p2d = layout2d.getNodePosition(node.id);
     node.tree3dPosition = [p3d.x, p3d.y, p3d.z ?? 0];
     node.tree2dPosition = [p2d.x, p2d.y, 0];
-    // node.position = [x, y, z];
   });
 };
 
@@ -129,6 +128,7 @@ const getLargeData = (): GraphData => ({
     position: [0, 0, 0],
     scale: [2, 2, 2],
     rotation: [0, 0, 0],
+    data: { description: node.description },
   })),
   edges: largeGraphData.links.map((edge, i) => ({
     ...edge,

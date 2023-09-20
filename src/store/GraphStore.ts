@@ -4,7 +4,7 @@ import { RefObject, createRef } from "react";
 import { InstancedMesh, LineSegments } from "three";
 import { create } from "zustand";
 
-export type GNode = {
+export type GNode<T = unknown> = {
   id: string;
   color: string;
   spherePosition: Vector3Array;
@@ -13,6 +13,7 @@ export type GNode = {
   position: Vector3Array;
   scale: Vector3Array;
   rotation: Vector3Array;
+  data: T;
 };
 
 export type GEdge = {

@@ -68,8 +68,11 @@ export const InstancedNodes = forwardRef<THREE.InstancedMesh, BoxesProps>(
       if (iId === undefined) return;
 
       const nodeId = useGraphStore.getState().instanceIdToNodeId[iId];
+      const data = useGraphStore.getState().nodes[iId].data;
+
       console.log("-------------------");
       console.log("Node", nodeId, iId);
+      console.log("Data", data);
     };
 
     useLayoutEffect(() => {

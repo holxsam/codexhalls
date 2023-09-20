@@ -21,6 +21,7 @@ export const generateRandomGraph = (n = 300, scale = 2): GraphData => {
       position: [r(), r(), r()],
       scale: [scale, scale, scale],
       rotation: [0, 0, 0],
+      data: {},
     })),
     edges: [...Array(n).keys()]
       .filter((i) => i)
