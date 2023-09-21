@@ -1,18 +1,7 @@
 "use client";
 import { useGraphStore } from "@/store/GraphStore";
 import { cn } from "@/utils/utils";
-import {
-  IconAccessPoint,
-  IconAccessPointOff,
-  IconAtom,
-  IconAtom2,
-  IconAtomOff,
-  IconBinaryTree2,
-  IconSearch,
-  IconSettings,
-  IconSphere,
-  IconX,
-} from "@tabler/icons-react";
+import { IconSearch, IconX } from "@tabler/icons-react";
 import { ReactNode, useEffect, useRef, useState } from "react";
 import { WikiSidebarNavToggle } from "../WikiSidebarNav/WikiSidebarNavToggle";
 
