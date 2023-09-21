@@ -1,6 +1,6 @@
 import { MinimizeTarget } from "../MinimizeTarget/MinimizeTarget";
 import { Searchbar } from "../Searchbar/Searchbar";
-import { ControlsTip } from "../ControlsTip/ControlsTip";
+import { ControlsTip } from "../ControlsTip/ControlsTips";
 import {
   TouchControlsToggle,
   GraphModeToggle,
@@ -63,6 +63,7 @@ export function Sidebar() {
       </div>
       <nav className="relative flex flex-col gap-2 pointer-events-auto">
         <Searchbar />
+        {/* <ControlsTip /> */}
         <WikiSidebarNav links={links} />
         <MobileWikiSidebarNav links={links} />
       </nav>

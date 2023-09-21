@@ -9,14 +9,11 @@ import {
   INITIAL_POSITION,
   INITIAL_SCALE,
   INITIAL_ROTATION,
+  MINIMIZED_SCALE,
 } from "@/utils/constants";
 
 const vec = new THREE.Vector3(); // create once and reuse
 const pos = new THREE.Vector3(); // create once and reuse
-
-// const initialPosition: Vector3Array = [0, -60, 0];
-// const initialRotation: Vector3Array = [Math.PI / 4, Math.PI / 4, 0];
-// const initialScale = 1.3;
 
 export const GraphSceneAndControls = () => {
   const camera = useThree((state) => state.camera);
@@ -48,7 +45,7 @@ export const GraphSceneAndControls = () => {
       pos.copy(camera.position).add(vec.multiplyScalar(distance));
 
       setGraphPosition([pos.x, pos.y, 0]);
-      setGraphScale(0.25);
+      setGraphScale(MINIMIZED_SCALE);
     }
   }, [fullscreen, minimizedPosition, camera]);
 

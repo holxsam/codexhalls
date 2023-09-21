@@ -1,18 +1,9 @@
 import { IconHandMove, IconHandTwoFingers } from "@tabler/icons-react";
 import { ReactNode } from "react";
 
-export function ControlsTip() {
-  return (
-    <div className="flex justify-between pointer-events-auto">
-      <DesktopControlTips />
-      <TouchControlTips />
-    </div>
-  );
-}
-
 export function DesktopControlTips() {
   return (
-    <div className="hidden sm:flex gap-4 px-2 text-sm text-zinc-700 ">
+    <div className="flex hiddenzzsm:flex gap-4 text-sm text-zinc-700 ">
       <span className="flex gap-1 items-center">
         <PrimaryMouseButton />
         <span className="capitalize text-sm font-bold">rotate</span>
@@ -34,13 +25,13 @@ export function DesktopControlTips() {
 
 export function TouchControlTips() {
   return (
-    <div className="flex sm:hidden gap-4 px-2 text-sm text-zinc-700">
+    <div className="flex zzsm:hidden gap-4 text-sm text-zinc-700">
       <span className="flex gap-1 items-center">
-        <IconHandMove />
+        <IconHandMove size={24} />
         <span className="capitalize text-sm font-bold">rotate</span>
       </span>
       <span className="flex gap-1 items-center">
-        <IconHandTwoFingers />
+        <IconHandTwoFingers size={24} />
         <span className="capitalize text-sm font-bold">pan+zoom</span>
       </span>
     </div>

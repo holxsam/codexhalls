@@ -5,6 +5,7 @@ import { useGraphStore } from "@/store/GraphStore";
 import { cn } from "@/utils/utils";
 import { AnimatePresence, motion } from "framer-motion";
 import { ReactNode, useEffect } from "react";
+import { ControlsTip } from "../ControlsTip/ControlsTips";
 
 type PageTransitionProps = { children?: ReactNode };
 export function PageTransition({ children }: PageTransitionProps) {
@@ -37,6 +38,9 @@ export function PageTransition({ children }: PageTransitionProps) {
       >
         {children}
       </motion.div>
+      {/* <div className="fixed inset-0 flex justify-center items-center pointer-events-none">
+        <ControlsTip />
+      </div> */}
     </AnimatePresence>
   );
 }
